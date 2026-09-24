@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QuestAR · Маркеры для печати</title>
+  <style>
+    body { font-family: sans-serif; margin: 24px; color: #222; }
+    .markers { display: flex; flex-wrap: wrap; gap: 24px; }
+    .markers img { width: 8cm; height: auto; }
+    @media print {
+      .note { display: none; }
+      .markers img { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="note">
+    <h1>Маркеры для квеста</h1>
+    <p>Распечатайте страницу (Ctrl+P), вырежьте маркеры и спрячьте их по квартире.
+       Белое поле вокруг чёрной рамки не обрезайте — без него камера маркер не увидит.</p>
+  </div>
+  <div class="markers">
+    <img src="markers/scene1.svg" alt="Маркер 1 — карта">
+    <img src="markers/scene2.svg" alt="Маркер 2 — компас">
+    <img src="markers/scene3.svg" alt="Маркер 3 — сундук">
+  </div>
+</body>
+</html>
