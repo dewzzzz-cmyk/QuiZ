@@ -27,7 +27,7 @@
 | `quest-link.js` | Упаковка квеста в ссылку и проверка его содержимого |
 | `markers.html` | Страница для печати маркеров |
 | `markers/` | Маркеры: `.patt` для распознавания, `.svg` для печати |
-| `tools/gen-markers.mjs` | Генератор маркеров: `node mvp/tools/gen-markers.mjs` |
+| `../tools/gen-markers.mjs` | Генератор маркеров всех квестов: `node tools/gen-markers.mjs` из корня репозитория |
 
 ## Где разместить
 Нужна страница с HTTPS. Варианты:
