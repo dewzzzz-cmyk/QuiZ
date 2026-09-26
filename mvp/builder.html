@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QuestAR · Сборщик квеста</title>
+  <link rel="stylesheet" href="builder.css">
+</head>
+<body>
+  <main>
+    <h1>Сборщик квеста</h1>
+    <p class="lead">Впишите имя именинника и свои загадки — получите ссылку на квест и маркеры для печати.</p>
+
+    <form id="form" novalidate>
+      <section class="card">
+        <h2>Общее</h2>
+        <label>Имя именинника
+          <input name="player" maxlength="60" required>
+        </label>
+        <label>Название квеста
+          <input name="title" maxlength="60" required>
+        </label>
+        <label>Вступление
+          <textarea name="intro" maxlength="300" rows="3" required></textarea>
+        </label>
+      </section>
+
+      <div id="scenes"></div>
+
+      <section class="card">
+        <h2>Финал</h2>
+        <label>Текст после последней загадки
+          <textarea name="finale" maxlength="300" rows="3" required></textarea>
+          <small><code>{name}</code> заменится на имя именинника</small>
+        </label>
+      </section>
+
+      <div id="errors" class="errors" hidden></div>
+
+      <div class="actions">
+        <button type="submit">Собрать ссылку</button>
+        <button type="button" id="reset" class="secondary">Начать с примера</button>
+      </div>
+    </form>
+
+    <section id="result" class="card result" hidden>
+      <h2>Квест готов</h2>
+      <input id="link" readonly>
+      <div class="actions">
+        <button type="button" id="copy">Скопировать ссылку</button>
+        <a id="open" class="button secondary" target="_blank" rel="noopener">Открыть квест</a>
+        <a id="demo" class="button secondary" target="_blank" rel="noopener">Проверить без камеры</a>
+        <a href="markers.html" class="button secondary" target="_blank" rel="noopener">Маркеры для печати</a>
+      </div>
+      <p class="hint">Распечатайте маркеры, спрячьте их по порядку и отправьте ссылку на телефон, с которого будут играть.</p>
+    </section>
+  </main>
+
+  <template id="scene-tpl">
+    <section class="card scene">
+      <h2></h2>
+      <label>Где искать маркер (подсказка на экране)
+        <input data-field="search" maxlength="300" required>
+      </label>
+      <label>Загадка
+        <textarea data-field="riddle" maxlength="300" rows="2" required></textarea>
+      </label>
+      <fieldset>
+        <legend>Варианты ответа — отметьте правильный</legend>
+        <div class="options"></div>
+      </fieldset>
+      <label data-success>Текст после верного ответа
+        <textarea data-field="success" maxlength="300" rows="2"></textarea>
+      </label>
+    </section>
+  </template>
+
+  <script src="quest.js"></script>
+  <script src="quest-link.js"></script>
+  <script src="builder.js"></script>
+</body>
+</html>

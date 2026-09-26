@@ -1,8 +1,14 @@
 (() => {
-  const quest = window.QUEST;
   const params = new URLSearchParams(location.search);
+  const linked = window.QuestLink.fromLocation();
+  const quest = { ...window.QUEST, ...linked };
   const playerName = params.get('name') || quest.player;
   const $ = (id) => document.getElementById(id);
+
+  if (params.has('q') && !linked) console.warn('QuestAR: квест в ссылке повреждён, играем квест по умолчанию');
+  $('start-title').textContent = quest.title;
+  $('start-intro').textContent = quest.intro;
+  document.title = `QuestAR · ${quest.title}`;
 
   let current = 0;
   let phase = 'start'; // start → search → riddle → … → done
