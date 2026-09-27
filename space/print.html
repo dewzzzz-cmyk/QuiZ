@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Звёздная экспедиция · Метки и инструкция</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Russo+One&display=swap" rel="stylesheet">
+  <style>
+    :root { --ink: #111827; --muted: #4b5563; --line: #d1d5db; --accent: #4f46e5; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #eef0f6; color: var(--ink); font-family: 'Manrope', system-ui, sans-serif; }
+    .page { width: 210mm; min-height: 297mm; margin: 16px auto; padding: 16mm; background: #fff; box-shadow: 0 6px 30px rgba(0, 0, 0, 0.12); }
+    h1, h2 { font-family: 'Russo One', sans-serif; font-weight: 400; margin: 0; }
+    h1 { font-size: 30px; }
+    h2 { font-size: 18px; margin: 18px 0 8px; }
+    .kicker { color: var(--accent); text-transform: uppercase; letter-spacing: 0.18em; font-size: 12px; font-weight: 800; margin: 0 0 6px; }
+    p, li { font-size: 14px; line-height: 1.55; color: #1f2937; }
+    ol, ul { padding-left: 20px; margin: 6px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 6px; }
+    th, td { border: 1px solid var(--line); padding: 7px 9px; text-align: left; vertical-align: top; }
+    th { background: #f3f4f6; }
+    td.blank { width: 34%; }
+    .note { margin-top: 14px; padding: 10px 14px; border-left: 4px solid var(--accent); background: #eef2ff; border-radius: 6px; }
+    .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10mm; }
+    .card { border: 2px dashed #9ca3af; border-radius: 6mm; padding: 6mm; text-align: center; break-inside: avoid; }
+    .card .num { font-family: 'Russo One', sans-serif; font-size: 13px; color: var(--muted); letter-spacing: 0.1em; }
+    .card .name { font-family: 'Russo One', sans-serif; font-size: 22px; margin: 2mm 0 3mm; }
+    .card img { width: 70mm; height: auto; display: block; margin: 0 auto; }
+    .toolbar { position: sticky; top: 0; z-index: 1; display: flex; gap: 10px; justify-content: center; padding: 12px; background: #111827; }
+    .toolbar button, .toolbar a { font: inherit; font-weight: 800; border: 0; border-radius: 999px; padding: 10px 20px; background: #5ef2ff; color: #04121a; cursor: pointer; text-decoration: none; }
+    .toolbar a { background: #374151; color: #fff; }
+    @media print {
+      body { background: #fff; }
+      .toolbar { display: none; }
+      .page { margin: 0; box-shadow: none; width: auto; min-height: 0; padding: 10mm; page-break-after: always; }
+      .page:last-child { page-break-after: auto; }
+    }
+    @media (max-width: 820px) { .page { width: auto; margin: 8px; padding: 18px; } .cards { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <button onclick="print()">🖨 Распечатать</button>
+    <a href="index.html">🚀 Открыть квест</a>
+  </div>
+
+  <section class="page">
+    <p class="kicker">AR-квест · инструкция для взрослого</p>
+    <h1>Звёздная экспедиция</h1>
+    <p>Корабль «Заря-7» потерял 4 навигационных кристалла. Дети с планшетом ищут метки станций, «сканируют» их камерой — над меткой появляется планета в дополненной реальности — и выполняют задания. За каждую станцию — кристалл с буквой. Из букв на космодроме складывается слово запуска, ракета взлетает, капитан получает удостоверение космонавта.</p>
+
+    <h2>Что понадобится</h2>
+    <ul>
+      <li><b>Планшет</b> (лучше) или телефон с камерой. Браузер: Chrome на Android, Safari на iPad/iPhone.</li>
+      <li>Квест открывается по ссылке <b>https://…</b> — по http камера не включится.</li>
+      <li>Распечатка меток (следующие страницы), ножницы, скотч.</li>
+      <li>Возраст: 6–10 лет. Время: 20–30 минут. Можно играть командой — один планшет на всех, по очереди.</li>
+    </ul>
+
+    <h2>Подготовка (10 минут)</h2>
+    <ol>
+      <li>Распечатайте метки на обычной белой бумаге, лучше без масштабирования («Фактический размер»).</li>
+      <li>Вырежьте по пунктиру. <b>Белое поле вокруг чёрной рамки не обрезайте</b> — без него камера не узнает метку.</li>
+      <li>Спрячьте метки в разных местах и запишите, где — таблица ниже. Метку можно положить на стол или приклеить на стену, дверь, шкаф.</li>
+      <li>Проверьте хотя бы одну метку заранее: откройте квест, пройдите брифинг, наведите планшет на метку «Луна».</li>
+    </ol>
+
+    <table>
+      <tr><th>Станция</th><th>Задание</th><th>Где спрятана (впишите)</th></tr>
+      <tr><td>🌙 1 · Луна</td><td>Вопрос: кто первым полетел в космос</td><td class="blank"></td></tr>
+      <tr><td>🔴 2 · Марс</td><td>Код с табло рядом с Марсом — виден только через планшет</td><td class="blank"></td></tr>
+      <tr><td>🪐 3 · Сатурн</td><td>Расставить планеты по порядку от Солнца</td><td class="blank"></td></tr>
+      <tr><td>☄️ 4 · Пояс астероидов</td><td>Мини-игра: поймать 10 кристаллов</td><td class="blank"></td></tr>
+      <tr><td>🚀 5 · Космодром</td><td>Сложить слово запуска и зажать «ПУСК»</td><td class="blank"></td></tr>
+    </table>
+
+    <div class="note">
+      <b>Советы.</b> Хорошее освещение — главное условие: в полумраке камера метки не видит. Держите планшет в 30–60 см от метки, чтобы она целиком была в кадре. Метки проходятся строго по порядку — если найдут не ту, квест подскажет, что искать сначала.
+      <br><b>Ответы:</b> Гагарин · код 274 · Меркурий, Венера, Земля, Марс · слово ПУСК.
+    </div>
+  </section>
+
+  <section class="page">
+    <p class="kicker">Вырежьте по пунктиру</p>
+    <div class="cards">
+      <div class="card"><div class="num">СТАНЦИЯ 1</div><div class="name">🌙 Луна</div><img src="markers/moon.svg" alt="Метка Луна"></div>
+      <div class="card"><div class="num">СТАНЦИЯ 2</div><div class="name">🔴 Марс</div><img src="markers/mars.svg" alt="Метка Марс"></div>
+      <div class="card"><div class="num">СТАНЦИЯ 3</div><div class="name">🪐 Сатурн</div><img src="markers/saturn.svg" alt="Метка Сатурн"></div>
+      <div class="card"><div class="num">СТАНЦИЯ 4</div><div class="name">☄️ Пояс астероидов</div><img src="markers/belt.svg" alt="Метка Пояс астероидов"></div>
+    </div>
+  </section>
+
+  <section class="page">
+    <p class="kicker">Вырежьте по пунктиру</p>
+    <div class="cards">
+      <div class="card"><div class="num">СТАНЦИЯ 5</div><div class="name">🚀 Космодром</div><img src="markers/launch.svg" alt="Метка Космодром"></div>
+    </div>
+  </section>
+</body>
+</html>

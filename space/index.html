@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#050816">
+  <title>Звёздная экспедиция · AR-квест</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Russo+One&display=swap" rel="stylesheet">
+  <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- ================= AR-сцена ================= -->
+  <a-scene embedded
+           arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono;"
+           vr-mode-ui="enabled: false"
+           renderer="antialias: true; logarithmicDepthBuffer: true;">
+
+    <!-- Станция 1 · Луна: планета со спутником на орбите -->
+    <a-marker id="marker-moon" type="pattern" url="markers/moon.patt" emitevents="true" smooth="true" smoothCount="8">
+      <a-entity id="obj-moon" visible="false">
+        <a-entity position="0 0.55 0" animation="property: rotation; to: 0 360 0; loop: true; dur: 24000; easing: linear">
+          <a-sphere radius="0.42" color="#d7dde5" material="roughness: 1"></a-sphere>
+          <a-sphere radius="0.09" position="0.2 0.22 0.3" color="#9aa4b1"></a-sphere>
+          <a-sphere radius="0.12" position="-0.25 -0.05 0.28" color="#a3adb9"></a-sphere>
+          <a-sphere radius="0.06" position="0.05 -0.28 0.3" color="#8f99a6"></a-sphere>
+          <a-sphere radius="0.07" position="-0.1 0.3 -0.28" color="#9aa4b1"></a-sphere>
+        </a-entity>
+        <a-entity position="0 0.55 0" animation="property: rotation; to: 0 -360 0; loop: true; dur: 6000; easing: linear">
+          <a-entity position="0.8 0.1 0">
+            <a-box width="0.1" height="0.1" depth="0.1" color="#f5f5f5"></a-box>
+            <a-box width="0.34" height="0.01" depth="0.1" color="#3b82f6" material="emissive: #1d4ed8; emissiveIntensity: 0.6"></a-box>
+          </a-entity>
+        </a-entity>
+        <a-ring radius-inner="0.62" radius-outer="0.66" rotation="-90 0 0" position="0 0.02 0" color="#5ef2ff"
+                material="emissive: #5ef2ff; emissiveIntensity: 1; opacity: 0.8; transparent: true"
+                animation="property: scale; from: 0.9 0.9 0.9; to: 1.1 1.1 1.1; dir: alternate; loop: true; dur: 1400"></a-ring>
+      </a-entity>
+    </a-marker>
+
+    <!-- Станция 2 · Марс: планета, марсоход и табло с кодом -->
+    <a-marker id="marker-mars" type="pattern" url="markers/mars.patt" emitevents="true" smooth="true" smoothCount="8">
+      <a-entity id="obj-mars" visible="false">
+        <a-sphere radius="0.36" position="-0.38 0.45 0" color="#d9572b" material="roughness: 0.9"
+                  animation="property: rotation; to: 0 360 0; loop: true; dur: 18000; easing: linear"></a-sphere>
+        <a-entity position="-0.38 0.1 0.45">
+          <a-box width="0.22" height="0.08" depth="0.14" color="#e5e7eb"></a-box>
+          <a-cylinder radius="0.04" height="0.03" rotation="0 0 90" position="-0.09 -0.05 0.08" color="#374151"></a-cylinder>
+          <a-cylinder radius="0.04" height="0.03" rotation="0 0 90" position="0.09 -0.05 0.08" color="#374151"></a-cylinder>
+          <a-cylinder radius="0.04" height="0.03" rotation="0 0 90" position="-0.09 -0.05 -0.08" color="#374151"></a-cylinder>
+          <a-cylinder radius="0.04" height="0.03" rotation="0 0 90" position="0.09 -0.05 -0.08" color="#374151"></a-cylinder>
+          <a-cylinder radius="0.01" height="0.16" position="0.06 0.12 0" color="#9ca3af"></a-cylinder>
+          <a-sphere radius="0.03" position="0.06 0.21 0" color="#5ef2ff" material="emissive: #5ef2ff; emissiveIntensity: 1"
+                    animation="property: scale; from: 1 1 1; to: 1.6 1.6 1.6; dir: alternate; loop: true; dur: 500"></a-sphere>
+        </a-entity>
+        <!-- Табло лежит параллельно метке: так его видно и на столе, и на стене -->
+        <a-entity position="0.42 0.5 0" rotation="-90 0 0">
+          <a-plane width="0.78" height="0.5" color="#0b1330" material="opacity: 0.92; transparent: true"></a-plane>
+          <a-plane width="0.8" height="0.52" position="0 0 -0.002" color="#5ef2ff" material="emissive: #5ef2ff; emissiveIntensity: 0.8"></a-plane>
+          <a-text id="mars-code" value="" align="center" color="#5ef2ff" width="3.2" position="0 -0.02 0.01"></a-text>
+          <a-text value="CODE" align="center" color="#8b9cc8" width="1.2" position="0 0.17 0.01"></a-text>
+        </a-entity>
+      </a-entity>
+    </a-marker>
+
+    <!-- Станция 3 · Сатурн: планета с кольцами -->
+    <a-marker id="marker-saturn" type="pattern" url="markers/saturn.patt" emitevents="true" smooth="true" smoothCount="8">
+      <a-entity id="obj-saturn" visible="false">
+        <a-entity position="0 0.55 0" rotation="20 0 12" animation="property: rotation; to: 20 360 12; loop: true; dur: 16000; easing: linear">
+          <a-sphere radius="0.34" color="#e9c46a" material="roughness: 0.8"></a-sphere>
+          <a-torus radius="0.34" radius-tubular="0.02" rotation="90 0 0" color="#d9a441" scale="1 1 0.15"></a-torus>
+          <a-ring radius-inner="0.46" radius-outer="0.62" rotation="-90 0 0" color="#e6c88a" material="side: double; opacity: 0.85; transparent: true"></a-ring>
+          <a-ring radius-inner="0.64" radius-outer="0.74" rotation="-90 0 0" color="#caa46a" material="side: double; opacity: 0.6; transparent: true"></a-ring>
+        </a-entity>
+        <a-entity animation="property: rotation; to: 0 360 0; loop: true; dur: 9000; easing: linear">
+          <a-sphere radius="0.05" position="0.95 0.6 0" color="#f8fafc"></a-sphere>
+        </a-entity>
+      </a-entity>
+    </a-marker>
+
+    <!-- Станция 4 · Пояс астероидов: камни и кристаллы на орбитах -->
+    <a-marker id="marker-belt" type="pattern" url="markers/belt.patt" emitevents="true" smooth="true" smoothCount="8">
+      <a-entity id="obj-belt" visible="false" position="0 0.4 0">
+        <a-octahedron radius="0.16" color="#a78bfa" material="emissive: #8b5cf6; emissiveIntensity: 0.9; metalness: 0.3"
+                      animation="property: rotation; to: 0 360 0; loop: true; dur: 3000; easing: linear"></a-octahedron>
+        <a-entity animation="property: rotation; to: 0 360 0; loop: true; dur: 12000; easing: linear">
+          <a-dodecahedron radius="0.12" position="0.6 0.05 0" color="#8d7b68"></a-dodecahedron>
+          <a-dodecahedron radius="0.08" position="-0.55 -0.05 0.25" color="#6b5d50"></a-dodecahedron>
+          <a-dodecahedron radius="0.1" position="0.1 0.1 -0.6" color="#7c6a58"></a-dodecahedron>
+          <a-octahedron radius="0.06" position="-0.2 0.15 0.6" color="#5ef2ff" material="emissive: #5ef2ff; emissiveIntensity: 1"></a-octahedron>
+        </a-entity>
+        <a-entity animation="property: rotation; to: 0 -360 0; loop: true; dur: 8000; easing: linear">
+          <a-dodecahedron radius="0.07" position="0.85 -0.1 0.2" color="#8d7b68"></a-dodecahedron>
+          <a-dodecahedron radius="0.11" position="-0.8 0.1 -0.2" color="#6b5d50"></a-dodecahedron>
+          <a-octahedron radius="0.05" position="0.3 -0.05 0.8" color="#ffd166" material="emissive: #ffd166; emissiveIntensity: 1"></a-octahedron>
+        </a-entity>
+      </a-entity>
+    </a-marker>
+
+    <!-- Станция 5 · Космодром: ракета на стартовом столе -->
+    <a-marker id="marker-launch" type="pattern" url="markers/launch.patt" emitevents="true" smooth="true" smoothCount="8">
+      <a-entity id="obj-launch" visible="false">
+        <a-cylinder radius="0.5" height="0.05" position="0 0.025 0" color="#374151"></a-cylinder>
+        <a-ring radius-inner="0.42" radius-outer="0.48" rotation="-90 0 0" position="0 0.055 0" color="#ffd166"
+                material="emissive: #ffd166; emissiveIntensity: 0.8"></a-ring>
+        <a-box width="0.05" height="0.9" depth="0.05" position="0.32 0.5 0" color="#9ca3af"></a-box>
+        <a-entity id="rocket" position="0 0.06 0">
+          <a-cylinder radius="0.12" height="0.66" position="0 0.45 0" color="#f8fafc"></a-cylinder>
+          <a-cylinder radius="0.125" height="0.06" position="0 0.62 0" color="#e63946"></a-cylinder>
+          <a-cone radius-bottom="0.12" radius-top="0.001" height="0.26" position="0 0.91 0" color="#e63946"></a-cone>
+          <a-circle radius="0.05" position="0 0.52 0.121" color="#5ef2ff" material="emissive: #5ef2ff; emissiveIntensity: 1"></a-circle>
+          <a-box width="0.02" height="0.2" depth="0.16" position="0.13 0.18 0" color="#e63946"></a-box>
+          <a-box width="0.02" height="0.2" depth="0.16" position="-0.13 0.18 0" color="#e63946"></a-box>
+          <a-box width="0.16" height="0.2" depth="0.02" position="0 0.18 0.13" color="#e63946"></a-box>
+          <a-box width="0.16" height="0.2" depth="0.02" position="0 0.18 -0.13" color="#e63946"></a-box>
+          <a-cone id="flame" radius-bottom="0.09" radius-top="0.001" height="0.3" position="0 -0.03 0" rotation="180 0 0"
+                  color="#ff9f1c" material="emissive: #ff6b00; emissiveIntensity: 1; opacity: 0.9; transparent: true"
+                  animation="property: scale; from: 0.8 0.6 0.8; to: 1.1 1.2 1.1; dir: alternate; loop: true; dur: 120"></a-cone>
+        </a-entity>
+      </a-entity>
+    </a-marker>
+
+    <a-entity camera></a-entity>
+  </a-scene>
+
+  <!-- ================= Интерфейс поверх камеры ================= -->
+  <div id="hud" hidden>
+    <header class="topbar">
+      <div class="mission glass">
+        <span class="mission-ship" id="hud-ship"></span>
+        <ol class="route" id="route"></ol>
+      </div>
+      <div class="crystals glass" id="crystals" aria-label="Собранные кристаллы"></div>
+      <button class="icon-btn glass" id="sound-btn" aria-label="Звук">🔊</button>
+    </header>
+
+    <div id="reticle" aria-hidden="true">
+      <svg viewBox="0 0 200 200">
+        <path class="corner" d="M20 60 V20 H60"/><path class="corner" d="M140 20 H180 V60"/>
+        <path class="corner" d="M180 140 V180 H140"/><path class="corner" d="M60 180 H20 V140"/>
+        <circle class="ring-bg" cx="100" cy="100" r="46"/>
+        <circle class="ring" id="scan-ring" cx="100" cy="100" r="46" pathLength="100"/>
+      </svg>
+      <span id="reticle-label">Ищу сигнал…</span>
+    </div>
+
+    <div class="objective glass" id="objective">
+      <span class="objective-icon" id="objective-icon"></span>
+      <span id="objective-text"></span>
+    </div>
+
+    <button class="demo-btn glass" id="demo-btn" hidden>📡 Симулировать метку</button>
+  </div>
+
+  <section class="sheet glass" id="panel" hidden>
+    <div class="sheet-kicker" id="panel-kicker"></div>
+    <h2 id="panel-title"></h2>
+    <p id="panel-text"></p>
+    <div id="panel-body"></div>
+  </section>
+
+  <div id="catch-layer" hidden></div>
+
+  <div class="overlay" id="reward" hidden>
+    <div class="reward-card glass">
+      <div class="crystal-big"><span id="reward-letter"></span></div>
+      <h2 id="reward-title"></h2>
+      <p class="fact" id="reward-fact"></p>
+      <button class="btn" id="reward-btn">Продолжить миссию</button>
+    </div>
+  </div>
+
+  <div class="overlay countdown" id="countdown" hidden><span id="countdown-num"></span></div>
+
+  <div id="toast" hidden></div>
+
+  <!-- ================= Экраны вне AR ================= -->
+  <div id="screens">
+    <canvas id="stars"></canvas>
+
+    <section class="screen" id="screen-start">
+      <div class="logo">🚀</div>
+      <p class="kicker">AR-квест</p>
+      <h1 id="start-title"></h1>
+      <p class="lead">Космическое приключение прямо у тебя дома. Нужен планшет или телефон и распечатанные метки станций.</p>
+      <label class="field">
+        <span>Как зовут капитана?</span>
+        <input id="name-input" maxlength="30" placeholder="Имя капитана" autocomplete="off">
+      </label>
+      <button class="btn btn-big" id="start-btn">На борт!</button>
+      <a class="link" href="print.html" target="_blank" rel="noopener">Метки для печати и инструкция для взрослых</a>
+    </section>
+
+    <section class="screen" id="screen-brief" hidden>
+      <p class="kicker">Входящее сообщение · бортовой компьютер</p>
+      <div class="terminal glass"><p id="brief-text"></p><span class="caret"></span></div>
+      <button class="btn btn-big" id="brief-btn" disabled>Начать миссию</button>
+    </section>
+
+    <section class="screen" id="screen-final" hidden>
+      <div class="certificate">
+        <p class="cert-kicker">Удостоверение космонавта <span id="cert-number"></span></p>
+        <h1 id="cert-name"></h1>
+        <p class="cert-mission" id="cert-mission"></p>
+        <div class="cert-stars">⭐⭐⭐⭐⭐</div>
+        <dl class="cert-stats">
+          <div><dt>Время миссии</dt><dd id="cert-time"></dd></div>
+          <div><dt>Станций пройдено</dt><dd id="cert-stations"></dd></div>
+          <div><dt>Дата</dt><dd id="cert-date"></dd></div>
+        </dl>
+        <p class="cert-text" id="cert-text"></p>
+      </div>
+      <button class="btn" id="restart-btn">Новая миссия</button>
+    </section>
+
+    <section class="screen" id="screen-camera" hidden>
+      <div class="logo">📷</div>
+      <h1>Нет доступа к камере</h1>
+      <p class="lead">Разрешите браузеру доступ к камере и перезагрузите страницу. Квест открывается по ссылке <b>https://</b> — по http камера не работает.</p>
+      <button class="btn" onclick="location.reload()">Попробовать снова</button>
+      <a class="link" id="camera-demo-link" href="?demo">Пройти без камеры (демо)</a>
+    </section>
+  </div>
+
+  <script src="quest.js"></script>
+  <script src="fx.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

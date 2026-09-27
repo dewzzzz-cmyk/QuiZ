@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QuestAR · AR-квесты</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Russo+One&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 32px 16px;
+      background: radial-gradient(ellipse at 50% 120%, #1b1560, #0b1033 40%, #050816 80%);
+      color: #eef4ff;
+      font-family: 'Manrope', system-ui, sans-serif;
+    }
+    main { width: min(100%, 760px); text-align: center; }
+    h1 { margin: 0 0 8px; font-family: 'Russo One', sans-serif; font-weight: 400; font-size: clamp(36px, 7vw, 56px); }
+    p.lead { margin: 0 0 32px; color: #9fb0d6; font-size: 18px; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+    a.card {
+      display: block;
+      padding: 24px 20px;
+      border-radius: 22px;
+      text-decoration: none;
+      color: inherit;
+      text-align: left;
+      background: rgba(12, 20, 52, 0.7);
+      border: 1px solid rgba(94, 242, 255, 0.25);
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    a.card:hover { transform: translateY(-4px); border-color: #5ef2ff; }
+    .icon { font-size: 40px; }
+    .card h2 { margin: 10px 0 6px; font-family: 'Russo One', sans-serif; font-weight: 400; font-size: 22px; }
+    .card p { margin: 0; color: #9fb0d6; line-height: 1.45; }
+    .tag { display: inline-block; margin-top: 12px; padding: 4px 10px; border-radius: 999px; background: rgba(94, 242, 255, 0.15); color: #5ef2ff; font-size: 13px; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>QuestAR</h1>
+    <p class="lead">AR-квесты для детских праздников: метки на бумаге, приключение — в планшете.</p>
+    <div class="cards">
+      <a class="card" href="space/">
+        <div class="icon">🚀</div>
+        <h2>Звёздная экспедиция</h2>
+        <p>5 станций, 5 типов заданий, ракета и удостоверение космонавта.</p>
+        <span class="tag">6–10 лет · 25 минут</span>
+      </a>
+      <a class="card" href="mvp/">
+        <div class="icon">🏴‍☠️</div>
+        <h2>Сокровище Флинта</h2>
+        <p>Пиратский квест на 3 сцены с загадками.</p>
+        <span class="tag">6–10 лет · 15 минут</span>
+      </a>
+      <a class="card" href="mvp/builder.html">
+        <div class="icon">🛠</div>
+        <h2>Сборщик квеста</h2>
+        <p>Свои загадки и имя именинника в одной ссылке.</p>
+        <span class="tag">для взрослых</span>
+      </a>
+    </div>
+  </main>
+</body>
+</html>

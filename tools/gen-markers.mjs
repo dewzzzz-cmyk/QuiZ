@@ -1,34 +1,35 @@
-// Генерирует маркеры AR.js для трёх сцен: .patt (для распознавания) и .svg (для печати).
-// Запуск: node mvp/tools/gen-markers.mjs
+// Генерирует маркеры AR.js для всех квестов: .patt (для распознавания) и .svg (для печати).
+// Запуск из корня репозитория: node tools/gen-markers.mjs
 //
 // Узор каждого маркера — сетка 4×4 (1 = чёрный). Формат .patt повторяет генератор AR.js
 // (threex-arpatternfile): 16×16 пикселей, 4 поворота против часовой, каналы B, G, R.
+// Узоры подобраны перебором так, чтобы маркеры одного квеста не путались при любом повороте.
 
 import { writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const OUT = join(dirname(fileURLToPath(import.meta.url)), '..', 'markers');
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 
-const PATTERNS = {
-  scene1: [
-    [1, 1, 0, 0],
-    [0, 1, 1, 1],
-    [1, 0, 0, 0],
-    [1, 1, 1, 0],
-  ],
-  scene2: [
-    [0, 1, 0, 1],
-    [1, 1, 0, 0],
-    [0, 0, 1, 0],
-    [1, 0, 0, 1],
-  ],
-  scene3: [
-    [1, 1, 1, 0],
-    [1, 0, 0, 0],
-    [0, 1, 0, 1],
-    [1, 1, 1, 0],
-  ],
+const SETS = {
+  mvp: {
+    minDistance: 8,
+    markers: {
+      scene1: { label: 'QuestAR · Сцена 1 · Карта', grid: [[1, 1, 0, 0], [0, 1, 1, 1], [1, 0, 0, 0], [1, 1, 1, 0]] },
+      scene2: { label: 'QuestAR · Сцена 2 · Компас', grid: [[0, 1, 0, 1], [1, 1, 0, 0], [0, 0, 1, 0], [1, 0, 0, 1]] },
+      scene3: { label: 'QuestAR · Сцена 3 · Сундук', grid: [[1, 1, 1, 0], [1, 0, 0, 0], [0, 1, 0, 1], [1, 1, 1, 0]] },
+    },
+  },
+  space: {
+    minDistance: 6,
+    markers: {
+      moon: { label: 'Станция 1 · Луна', grid: [[1, 0, 1, 0], [0, 1, 0, 1], [0, 0, 1, 1], [0, 1, 0, 0]] },
+      mars: { label: 'Станция 2 · Марс', grid: [[1, 0, 0, 0], [1, 1, 1, 1], [1, 0, 0, 1], [1, 1, 0, 0]] },
+      saturn: { label: 'Станция 3 · Сатурн', grid: [[1, 1, 0, 0], [1, 1, 0, 1], [1, 0, 1, 0], [1, 0, 1, 0]] },
+      belt: { label: 'Станция 4 · Пояс астероидов', grid: [[0, 1, 0, 0], [1, 1, 1, 0], [0, 1, 1, 0], [1, 1, 1, 0]] },
+      launch: { label: 'Станция 5 · Космодром', grid: [[1, 1, 0, 0], [1, 0, 1, 1], [0, 0, 1, 0], [0, 0, 0, 1]] },
+    },
+  },
 };
 
 const upscale = (grid, size) =>
@@ -71,11 +72,10 @@ ${rects.join('\n')}
 `;
 }
 
-// Узоры должны различаться при любых поворотах, иначе AR.js перепутает сцены
-// (узоры выше подобраны перебором: между разными маркерами не меньше 8 отличий из 16).
-function checkDistinct() {
+// Маркеры одного квеста должны различаться при любых поворотах, иначе AR.js перепутает станции.
+function checkDistinct(setName, { minDistance, markers }) {
   const all = [];
-  for (const [name, grid] of Object.entries(PATTERNS)) {
+  for (const [name, { grid }] of Object.entries(markers)) {
     let g = grid;
     for (let r = 0; r < 4; r++) {
       all.push({ name, r, key: g.flat().join('') });
@@ -86,14 +86,17 @@ function checkDistinct() {
     for (let j = i + 1; j < all.length; j++) {
       const a = all[i], b = all[j];
       const dist = [...a.key].filter((c, k) => c !== b.key[k]).length;
-      if (dist < 4) throw new Error(`Узоры слишком похожи: ${a.name}@${a.r * 90}° и ${b.name}@${b.r * 90}° (отличий: ${dist})`);
+      if (dist < (a.name === b.name ? 4 : minDistance))
+        throw new Error(`${setName}: узоры слишком похожи: ${a.name}@${a.r * 90}° и ${b.name}@${b.r * 90}° (отличий: ${dist})`);
     }
 }
 
-checkDistinct();
-const labels = { scene1: 'QuestAR · Сцена 1 · Карта', scene2: 'QuestAR · Сцена 2 · Компас', scene3: 'QuestAR · Сцена 3 · Сундук' };
-for (const [name, grid] of Object.entries(PATTERNS)) {
-  writeFileSync(join(OUT, `${name}.patt`), toPatt(grid));
-  writeFileSync(join(OUT, `${name}.svg`), toSvg(grid, labels[name]));
+for (const [setName, set] of Object.entries(SETS)) {
+  checkDistinct(setName, set);
+  const out = join(ROOT, setName, 'markers');
+  for (const [name, { grid, label }] of Object.entries(set.markers)) {
+    writeFileSync(join(out, `${name}.patt`), toPatt(grid));
+    writeFileSync(join(out, `${name}.svg`), toSvg(grid, label));
+  }
+  console.log(`${setName}: ${Object.keys(set.markers).length} маркера(ов) → ${out}`);
 }
-console.log('Маркеры сгенерированы в', OUT);
