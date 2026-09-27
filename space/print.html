@@ -4,15 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Звёздная экспедиция · Метки и инструкция</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Russo+One&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="fonts.css">
   <style>
-    :root { --ink: #111827; --muted: #4b5563; --line: #d1d5db; --accent: #4f46e5; }
+    :root { --ink: #111827; --muted: #4b5563; --line: #d1d5db; --accent: #c77c00; }
     * { box-sizing: border-box; }
-    body { margin: 0; background: #eef0f6; color: var(--ink); font-family: 'Manrope', system-ui, sans-serif; }
+    body { margin: 0; background: #eef0f6; color: var(--ink); font-family: 'IBM Plex Sans', system-ui, sans-serif; }
     .page { width: 210mm; min-height: 297mm; margin: 16px auto; padding: 16mm; background: #fff; box-shadow: 0 6px 30px rgba(0, 0, 0, 0.12); }
-    h1, h2 { font-family: 'Russo One', sans-serif; font-weight: 400; margin: 0; }
+    h1, h2 { font-family: 'Roboto Condensed', sans-serif; font-weight: 700; text-transform: uppercase; margin: 0; }
     h1 { font-size: 30px; }
     h2 { font-size: 18px; margin: 18px 0 8px; }
     .kicker { color: var(--accent); text-transform: uppercase; letter-spacing: 0.18em; font-size: 12px; font-weight: 800; margin: 0 0 6px; }
@@ -22,14 +20,19 @@
     th, td { border: 1px solid var(--line); padding: 7px 9px; text-align: left; vertical-align: top; }
     th { background: #f3f4f6; }
     td.blank { width: 34%; }
-    .note { margin-top: 14px; padding: 10px 14px; border-left: 4px solid var(--accent); background: #eef2ff; border-radius: 6px; }
+    .note { margin-top: 14px; padding: 10px 14px; border-left: 4px solid var(--accent); background: #fff7e6; border-radius: 6px; }
     .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10mm; }
     .card { border: 2px dashed #9ca3af; border-radius: 6mm; padding: 6mm; text-align: center; break-inside: avoid; }
-    .card .num { font-family: 'Russo One', sans-serif; font-size: 13px; color: var(--muted); letter-spacing: 0.1em; }
-    .card .name { font-family: 'Russo One', sans-serif; font-size: 22px; margin: 2mm 0 3mm; }
+    .card .num { font-family: 'Roboto Condensed', sans-serif; font-weight: 700; text-transform: uppercase; font-size: 13px; color: var(--muted); letter-spacing: 0.1em; }
+    .card .name { font-family: 'Roboto Condensed', sans-serif; font-weight: 700; text-transform: uppercase; font-size: 22px; margin: 2mm 0 3mm; }
     .card img { width: 70mm; height: auto; display: block; margin: 0 auto; }
+    .ti { display: inline-block; width: 20px; height: 20px; vertical-align: -5px; margin-right: 6px; }
+    .ci { display: inline-block; width: 30px; height: 30px; vertical-align: -7px; margin-right: 8px; }
+    .icon { width: 100%; height: 100%; display: block; object-fit: contain; }
+    .station-glyph { display: grid; place-items: center; border-radius: 50%; box-shadow: inset 0 0 0 1px #9ca3af; color: #111827; }
+    .station-glyph .glyph { width: 60%; height: 60%; }
     .toolbar { position: sticky; top: 0; z-index: 1; display: flex; gap: 10px; justify-content: center; padding: 12px; background: #111827; }
-    .toolbar button, .toolbar a { font: inherit; font-weight: 800; border: 0; border-radius: 999px; padding: 10px 20px; background: #5ef2ff; color: #04121a; cursor: pointer; text-decoration: none; }
+    .toolbar button, .toolbar a { font: inherit; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; border: 0; border-radius: 2px; padding: 10px 20px; background: #f5a524; color: #120b00; cursor: pointer; text-decoration: none; }
     .toolbar a { background: #374151; color: #fff; }
     @media print {
       body { background: #fff; }
@@ -42,8 +45,8 @@
 </head>
 <body>
   <div class="toolbar">
-    <button onclick="print()">🖨 Распечатать</button>
-    <a href="index.html">🚀 Открыть квест</a>
+    <button onclick="print()">Распечатать</button>
+    <a href="index.html">Открыть квест</a>
   </div>
 
   <section class="page">
@@ -69,11 +72,11 @@
 
     <table>
       <tr><th>Станция</th><th>Задание</th><th>Где спрятана (впишите)</th></tr>
-      <tr><td>🌙 1 · Луна</td><td>Вопрос: кто первым полетел в космос</td><td class="blank"></td></tr>
-      <tr><td>🔴 2 · Марс</td><td>Код с табло рядом с Марсом — виден только через планшет</td><td class="blank"></td></tr>
-      <tr><td>🪐 3 · Сатурн</td><td>Расставить планеты по порядку от Солнца</td><td class="blank"></td></tr>
-      <tr><td>☄️ 4 · Пояс астероидов</td><td>Мини-игра: поймать 10 кристаллов</td><td class="blank"></td></tr>
-      <tr><td>🚀 5 · Космодром</td><td>Сложить слово запуска и зажать «ПУСК»</td><td class="blank"></td></tr>
+      <tr><td><span class="ti" data-station="moon"></span>1 · Луна</td><td>Вопрос: кто первым полетел в космос</td><td class="blank"></td></tr>
+      <tr><td><span class="ti" data-station="mars"></span>2 · Марс</td><td>Код с табло рядом с Марсом — виден только через планшет</td><td class="blank"></td></tr>
+      <tr><td><span class="ti" data-station="saturn"></span>3 · Сатурн</td><td>Расставить планеты по порядку от Солнца</td><td class="blank"></td></tr>
+      <tr><td><span class="ti" data-station="belt"></span>4 · Пояс астероидов</td><td>Мини-игра: поймать 10 кристаллов</td><td class="blank"></td></tr>
+      <tr><td><span class="ti" data-station="launch"></span>5 · Космодром</td><td>Сложить слово запуска и зажать «ПУСК»</td><td class="blank"></td></tr>
     </table>
 
     <div class="note">
@@ -85,18 +88,20 @@
   <section class="page">
     <p class="kicker">Вырежьте по пунктиру</p>
     <div class="cards">
-      <div class="card"><div class="num">СТАНЦИЯ 1</div><div class="name">🌙 Луна</div><img src="markers/moon.svg" alt="Метка Луна"></div>
-      <div class="card"><div class="num">СТАНЦИЯ 2</div><div class="name">🔴 Марс</div><img src="markers/mars.svg" alt="Метка Марс"></div>
-      <div class="card"><div class="num">СТАНЦИЯ 3</div><div class="name">🪐 Сатурн</div><img src="markers/saturn.svg" alt="Метка Сатурн"></div>
-      <div class="card"><div class="num">СТАНЦИЯ 4</div><div class="name">☄️ Пояс астероидов</div><img src="markers/belt.svg" alt="Метка Пояс астероидов"></div>
+      <div class="card"><div class="num">СТАНЦИЯ 1</div><div class="name"><span class="ci" data-station="moon"></span>Луна</div><img src="markers/moon.svg" alt="Метка Луна"></div>
+      <div class="card"><div class="num">СТАНЦИЯ 2</div><div class="name"><span class="ci" data-station="mars"></span>Марс</div><img src="markers/mars.svg" alt="Метка Марс"></div>
+      <div class="card"><div class="num">СТАНЦИЯ 3</div><div class="name"><span class="ci" data-station="saturn"></span>Сатурн</div><img src="markers/saturn.svg" alt="Метка Сатурн"></div>
+      <div class="card"><div class="num">СТАНЦИЯ 4</div><div class="name"><span class="ci" data-station="belt"></span>Пояс астероидов</div><img src="markers/belt.svg" alt="Метка Пояс астероидов"></div>
     </div>
   </section>
 
   <section class="page">
     <p class="kicker">Вырежьте по пунктиру</p>
     <div class="cards">
-      <div class="card"><div class="num">СТАНЦИЯ 5</div><div class="name">🚀 Космодром</div><img src="markers/launch.svg" alt="Метка Космодром"></div>
+      <div class="card"><div class="num">СТАНЦИЯ 5</div><div class="name"><span class="ci" data-station="launch"></span>Космодром</div><img src="markers/launch.svg" alt="Метка Космодром"></div>
     </div>
   </section>
+  <script src="icons.js"></script>
+  <script>document.querySelectorAll('[data-station]').forEach((el) => (el.innerHTML = ICONS.station(el.dataset.station, 'icon')));</script>
 </body>
 </html>

@@ -1,6 +1,8 @@
 (() => {
   const Q = window.SPACE_QUEST;
   const { sound, say, burst } = window.FX;
+  const { station: stationIcon, line: glyph } = window.ICONS;
+  const pad2 = (n) => String(n).padStart(2, '0');
   const params = new URLSearchParams(location.search);
   const DEMO = params.has('demo');
   const SCAN_MS = 1400; // сколько держать метку в кадре, чтобы «отсканировать»
@@ -14,11 +16,11 @@
     phase: 'start', // start → brief → search → scan → task → reward → … → launch → done
     letters: [],
     startedAt: 0,
+    camera: false, // видео с камеры уже идёт
   };
+  const visible = new Set(); // метки, которые сейчас в кадре
 
   const fill = (text) => text.replaceAll('{name}', state.name);
-  const stars = window.FX.starfield($('stars'));
-  stars.start();
 
   // ---------- Экраны ----------
   function showScreen(id) {
@@ -26,7 +28,6 @@
     $('screens').hidden = !any;
     for (const s of document.querySelectorAll('.screen')) s.hidden = s.id !== id;
     $('hud').hidden = any;
-    any ? stars.start() : stars.stop();
   }
 
   let toastTimer;
@@ -43,7 +44,7 @@
     route.replaceChildren(
       ...stations.map((s, i) => {
         const li = document.createElement('li');
-        li.textContent = s.icon;
+        li.innerHTML = `${stationIcon(s.id)}<span class="idx">${i < state.current ? '✓' : pad2(i + 1)}</span>`;
         li.title = s.name;
         li.className = i < state.current ? 'done' : i === state.current ? 'active' : '';
         return li;
@@ -52,21 +53,26 @@
     $('crystals').replaceChildren(
       ...crystalStations.map((_, i) => {
         const slot = document.createElement('span');
-        slot.className = 'crystal-slot' + (state.letters[i] ? ' filled' : '');
+        slot.className = 'slot' + (state.letters[i] ? ' filled' : '');
         slot.textContent = state.letters[i] || '';
         return slot;
       }),
     );
+    $('cargo-count').textContent = `${state.letters.length}/${crystalStations.length}`;
     const st = stations[state.current];
     const searching = state.phase === 'search' || state.phase === 'scan';
     $('objective').hidden = !searching;
-    $('objective-icon').textContent = st?.icon ?? '';
+    $('objective-icon').innerHTML = st ? stationIcon(st.id) : '';
+    $('objective-label').textContent = st ? `Цель ${pad2(state.current + 1)} · ${st.name}` : '';
     $('objective-text').textContent = st?.search ?? '';
     $('reticle').hidden = !searching;
     $('reticle').classList.toggle('scanning', state.phase === 'scan');
-    $('reticle-label').textContent = state.phase === 'scan' ? 'Сканирую…' : 'Ищу сигнал…';
+    $('reticle-label').textContent = state.phase === 'scan' ? 'Сканирование' : 'Поиск сигнала';
+    if (state.phase !== 'scan') $('scan-pct').textContent = '';
     $('demo-btn').hidden = !(DEMO && state.phase === 'search');
-    $('sound-btn').textContent = window.FX.isMuted() ? '🔇' : '🔊';
+    $('sound-btn').innerHTML = glyph(window.FX.isMuted() ? 'soundOff' : 'soundOn');
+    $('cam-badge').classList.toggle('live', state.camera);
+    $('cam-label').textContent = state.camera ? 'CAM · LIVE' : DEMO ? 'ДЕМО' : 'НЕТ СИГНАЛА';
 
     stations.forEach((s, i) => {
       const obj = $(`obj-${s.id}`);
@@ -87,6 +93,7 @@
   let scanTick = null;
 
   function onMarkerFound(index) {
+    visible.add(index);
     if (state.phase === 'search') {
       if (index === state.current) return startScan();
       const s = stations[index];
@@ -96,23 +103,30 @@
   }
 
   function onMarkerLost(index) {
+    visible.delete(index);
     if (state.phase === 'scan' && index === state.current) {
       cancelScan();
       toast('Сигнал потерян — держи планшет ровнее');
     }
   }
 
+  // Метка могла попасть в кадр раньше, чем началась её станция: AR.js второй раз «найдена» не скажет.
+  function enterSearch() {
+    state.phase = 'search';
+    renderHud();
+    if (visible.has(state.current)) startScan();
+  }
+
   function startScan() {
     state.phase = 'scan';
     renderHud();
-    const ring = $('scan-ring');
-    ring.style.transition = 'none';
-    ring.style.strokeDashoffset = '100';
-    ring.getBoundingClientRect();
-    ring.style.transition = `stroke-dashoffset ${SCAN_MS}ms linear`;
-    ring.style.strokeDashoffset = '0';
+    const started = performance.now();
     sound.scan();
-    scanTick = setInterval(sound.scan, 350);
+    scanTick = setInterval(() => {
+      const p = Math.min(1, (performance.now() - started) / SCAN_MS);
+      $('scan-fill').style.width = `${p * 100}%`;
+      $('scan-pct').textContent = `${Math.round(p * 100)}%`;
+    }, 50);
     scanTimer = setTimeout(finishScan, SCAN_MS);
   }
 
@@ -120,13 +134,13 @@
     clearTimeout(scanTimer);
     clearInterval(scanTick);
     state.phase = 'search';
-    $('scan-ring').style.transition = 'none';
-    $('scan-ring').style.strokeDashoffset = '100';
+    $('scan-fill').style.width = '0';
     renderHud();
   }
 
   function finishScan() {
     clearInterval(scanTick);
+    $('scan-fill').style.width = '0';
     const st = stations[state.current];
     sound.found();
     state.phase = 'task';
@@ -137,7 +151,8 @@
 
   // ---------- Задания ----------
   function openPanel(station) {
-    $('panel-kicker').textContent = `${station.icon} Станция ${stations.indexOf(station) + 1} · ${station.name}`;
+    $('panel-thumb').innerHTML = stationIcon(station.id);
+    $('panel-kicker').textContent = `Станция ${pad2(stations.indexOf(station) + 1)} / ${pad2(stations.length)} · ${station.name}`;
     $('panel-title').textContent = station.task.title;
     $('panel-text').textContent = station.task.text;
     $('panel').hidden = false;
@@ -159,6 +174,15 @@
   };
 
   const button = (text, cls = 'option') => Object.assign(document.createElement('button'), { className: cls, textContent: text });
+  // Строка ответа: слева метка (A, B, C… или номер), справа текст.
+  function optionRow(text, tag) {
+    const b = document.createElement('button');
+    b.className = 'option';
+    b.innerHTML = `<span class="key-tag"></span><span></span>`;
+    b.firstChild.textContent = tag;
+    b.lastChild.textContent = text;
+    return b;
+  }
 
   function shuffle(list) {
     const a = [...list];
@@ -176,7 +200,7 @@
       const box = document.createElement('div');
       box.className = 'options';
       task.options.forEach((text, i) => {
-        const b = button(text);
+        const b = optionRow(text, 'ABCD'[i]);
         b.addEventListener('click', () => {
           if (i === task.answer) {
             b.classList.add('correct');
@@ -240,20 +264,21 @@
       box.className = 'order';
       let next = 0;
       const buttons = shuffle(task.items).map((item) => {
-        const b = button(item, 'option chip');
+        const b = optionRow(item, '·');
         b.addEventListener('click', () => {
           if (b.dataset.n) return;
           if (item === task.items[next]) {
             sound.tap();
             b.dataset.n = ++next;
+            b.firstChild.textContent = next;
             b.classList.add('picked');
             if (next === task.items.length) done();
           } else {
             sound.wrong();
             shake(box);
-            toast(`Не туда! Начнём курс заново`);
+            toast('Не туда! Прокладываем курс заново');
             next = 0;
-            buttons.forEach((x) => { delete x.dataset.n; x.classList.remove('picked'); });
+            buttons.forEach((x) => { delete x.dataset.n; x.classList.remove('picked'); x.firstChild.textContent = '·'; });
           }
         });
         return b;
@@ -268,9 +293,14 @@
       box.className = 'catch';
       const bar = Object.assign(document.createElement('div'), { className: 'progress' });
       const fillEl = bar.appendChild(Object.assign(document.createElement('span'), {}));
-      const label = Object.assign(document.createElement('p'), { className: 'catch-count', textContent: `0 / ${task.goal}` });
-      const go = button('Поехали!', 'btn');
-      box.append(label, bar, go);
+      const top = document.createElement('div');
+      top.className = 'catch-top';
+      top.innerHTML = '<span class="hud-label">Собрано</span><p class="catch-count"></p>';
+      const label = top.lastChild;
+      const setCount = (n) => (label.innerHTML = `${pad2(n)}<small> / ${pad2(task.goal)}</small>`);
+      setCount(0);
+      const go = button('Начать', 'btn');
+      box.append(top, bar, go);
 
       go.addEventListener('click', () => {
         go.remove();
@@ -292,7 +322,7 @@
             caught++;
             sound.collect();
             burst(e.clientX, e.clientY, 8);
-            label.textContent = `${caught} / ${task.goal}`;
+            setCount(caught);
             fillEl.style.width = `${(caught / task.goal) * 100}%`;
             setTimeout(() => c.remove(), 250);
             if (caught >= task.goal) {
@@ -318,12 +348,12 @@
       box.className = 'word';
       const target = document.createElement('div');
       target.className = 'word-target';
-      const slots = [...task.word].map(() => target.appendChild(Object.assign(document.createElement('span'), { className: 'crystal-slot' })));
+      const slots = [...task.word].map(() => target.appendChild(Object.assign(document.createElement('span'), { className: 'slot' })));
       const pool = document.createElement('div');
       pool.className = 'word-pool';
       let built = '';
       const letters = shuffle(state.letters).map((ch) => {
-        const b = button(ch, 'crystal-btn');
+        const b = button(ch, 'letter-btn');
         b.addEventListener('click', () => {
           if (b.disabled) return;
           sound.tap();
@@ -356,12 +386,12 @@
 
   function launchButton(box, done) {
     sound.success();
-    $('panel-title').textContent = 'Двигатели готовы!';
+    $('panel-title').textContent = 'Двигатели готовы';
     $('panel-text').textContent = 'Зажми кнопку и держи, пока шкала не заполнится.';
     say('Слово принято. Двигатели готовы. Зажми кнопку пуска!');
     const hold = document.createElement('button');
     hold.className = 'hold-btn';
-    hold.innerHTML = '<span class="hold-fill"></span><span class="hold-label">ПУСК</span>';
+    hold.innerHTML = '<span class="hold-fill"></span><span class="hold-label">Удерживай — пуск</span>';
     const fillEl = hold.querySelector('.hold-fill');
     let start = 0, raf = 0;
     const HOLD_MS = 1500;
@@ -409,8 +439,9 @@
       state.letters.push(station.letter);
       state.phase = 'reward';
       renderHud();
+      $('reward-kicker').textContent = `Кристалл навигации ${pad2(state.letters.length)} / ${pad2(crystalStations.length)}`;
       $('reward-letter').textContent = station.letter;
-      $('reward-title').textContent = `Кристалл «${station.letter}» получен!`;
+      $('reward-title').textContent = `Кристалл «${station.letter}» получен`;
       $('reward-fact').textContent = station.fact;
       $('reward').hidden = false;
       say(`Кристалл получен! ${station.fact}`);
@@ -421,8 +452,7 @@
     sound.tap();
     $('reward').hidden = true;
     state.current++;
-    state.phase = 'search';
-    renderHud();
+    enterSearch();
     say(stations[state.current].search);
   });
 
@@ -430,7 +460,7 @@
     closePanel();
     state.phase = 'launch';
     renderHud();
-    const seq = ['3', '2', '1', 'Поехали!'];
+    const seq = ['T−3', 'T−2', 'T−1', 'ПУСК'];
     $('countdown').hidden = false;
     seq.forEach((n, i) =>
       setTimeout(() => {
@@ -438,7 +468,7 @@
         $('countdown-num').classList.remove('pop');
         $('countdown-num').getBoundingClientRect();
         $('countdown-num').classList.add('pop');
-        if (i < 3) { sound.beep(); say(n); } else { say('Поехали!'); sound.launch(); liftOff(); }
+        if (i < 3) { sound.beep(); say(String(3 - i)); } else { say('Поехали!'); sound.launch(); liftOff(); }
       }, i * 1000),
     );
   }
@@ -457,35 +487,30 @@
   function finish() {
     state.phase = 'done';
     const secs = Math.round((Date.now() - state.startedAt) / 1000);
-    $('cert-number').textContent = `№ ${String(Math.floor(1000 + Math.random() * 9000))}`;
-    $('cert-name').textContent = `Капитан ${state.name}`;
+    $('cert-number').textContent = `· № ${String(Math.floor(1000 + Math.random() * 9000))}`;
+    $('cert-name').textContent = state.name;
     $('cert-mission').textContent = `Миссия «${Q.title}» выполнена`;
-    $('cert-time').textContent = `${Math.floor(secs / 60)} мин ${String(secs % 60).padStart(2, '0')} с`;
-    $('cert-stations').textContent = `${stations.length} из ${stations.length}`;
-    $('cert-date').textContent = new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+    $('cert-time').textContent = `${pad2(Math.floor(secs / 60))}:${pad2(secs % 60)}`;
+    $('cert-stations').textContent = `${pad2(stations.length)} / ${pad2(stations.length)}`;
+    $('cert-date').textContent = new Date().toLocaleDateString('ru-RU');
     $('cert-text').textContent = fill(Q.finale);
     showScreen('screen-final');
-    stars.warp(true);
-    setTimeout(() => stars.warp(false), 2500);
     say(fill(Q.finale));
-    setTimeout(() => {
-      const r = document.querySelector('.certificate').getBoundingClientRect();
-      burst(r.left + r.width / 2, r.top + 30, 24);
-    }, 400);
   }
 
   // ---------- Старт и брифинг ----------
   $('start-title').textContent = Q.title;
+  $('start-date').textContent = new Date().toLocaleDateString('ru-RU');
+  $('start-route').innerHTML = stations.map((s) => `<li>${stationIcon(s.id)}<span>${s.name.split(' ')[0].toUpperCase()}</span></li>`).join('');
+  window.ICONS.fill();
   $('hud-ship').textContent = Q.ship;
   $('name-input').value = params.get('name') || '';
 
   $('start-btn').addEventListener('click', () => {
     window.FX.unlock();
     sound.tap();
-    state.name = $('name-input').value.trim() || 'Звёздный';
+    state.name = $('name-input').value.trim() || 'Капитан';
     showScreen('screen-brief');
-    stars.warp(true);
-    setTimeout(() => stars.warp(false), 1200);
     typeBriefing();
   });
 
@@ -501,6 +526,7 @@
       if (i >= text.length) {
         clearInterval(timer);
         $('brief-btn').disabled = false;
+        $('brief-hint').textContent = 'Передача завершена';
       }
     }, 22);
     // Нажатие на текст — показать сразу целиком.
@@ -510,11 +536,37 @@
   $('brief-btn').addEventListener('click', () => {
     sound.tap();
     state.startedAt = Date.now();
-    state.phase = 'search';
     showScreen(null);
-    renderHud();
+    enterSearch();
     say(stations[0].search);
+    if (!state.camera && !DEMO) waitForCamera();
   });
+
+  // ---------- Камера ----------
+  let cameraTimer;
+  function waitForCamera() {
+    $('cam-loading').hidden = false;
+    cameraTimer = setTimeout(() => {
+      $('cam-loading-text').textContent = 'Камера не включается. Проверьте, что браузеру разрешён доступ к камере, и перезагрузите страницу.';
+    }, 8000);
+  }
+  function onCameraReady() {
+    state.camera = true;
+    clearTimeout(cameraTimer);
+    const wasWaiting = !$('cam-loading').hidden;
+    $('cam-loading').hidden = true;
+    renderHud();
+    if (wasWaiting || state.phase === 'search') toast('Камера включена ✓ Наведи планшет на метку', 3500);
+  }
+  window.addEventListener('arjs-video-loaded', () => !state.camera && onCameraReady());
+  // Событие могло прийти раньше, чем подписались: проверяем само видео.
+  const videoPoll = setInterval(() => {
+    const v = document.querySelector('video');
+    if (v && v.readyState >= 2 && v.videoWidth) {
+      clearInterval(videoPoll);
+      if (!state.camera) onCameraReady();
+    }
+  }, 500);
 
   $('restart-btn').addEventListener('click', () => location.reload());
 
@@ -532,15 +584,20 @@
 
   // Код для табло на Марсе берём из данных квеста.
   const codeTask = stations.find((s) => s.task.type === 'code');
-  if (codeTask) $('mars-code')?.setAttribute('value', [...codeTask.task.code].join(' '));
+  if (codeTask) $('mars-holo')?.setAttribute('hologram', 'text', codeTask.task.code);
 
   window.addEventListener('camera-error', () => {
     if (DEMO) return;
+    clearTimeout(cameraTimer);
+    $('cam-loading').hidden = true;
     showScreen('screen-camera');
   });
 
   // ?demo — кнопка вместо метки, чтобы пройти квест без камеры и распечатки.
-  $('demo-btn').addEventListener('click', () => onMarkerFound(state.current));
+  $('demo-btn').addEventListener('click', () => {
+    onMarkerFound(state.current);
+    visible.delete(state.current); // в демо «метка» сразу уходит из кадра
+  });
 
   showScreen('screen-start');
 })();

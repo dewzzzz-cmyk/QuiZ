@@ -12,7 +12,6 @@ window.SPACE_QUEST = {
     {
       id: 'moon',
       name: 'Луна',
-      icon: '🌙',
       search: 'Найди метку «Луна» и наведи на неё планшет',
       task: {
         type: 'choice',
@@ -27,7 +26,6 @@ window.SPACE_QUEST = {
     {
       id: 'mars',
       name: 'Марс',
-      icon: '🔴',
       search: 'Сигнал с Марса! Найди метку «Марс»',
       task: {
         type: 'code',
@@ -41,7 +39,6 @@ window.SPACE_QUEST = {
     {
       id: 'saturn',
       name: 'Сатурн',
-      icon: '🪐',
       search: 'Следующий сигнал — с Сатурна. Найди его метку',
       task: {
         type: 'order',
@@ -55,7 +52,6 @@ window.SPACE_QUEST = {
     {
       id: 'belt',
       name: 'Пояс астероидов',
-      icon: '☄️',
       search: 'Последний кристалл — в поясе астероидов. Найди метку',
       task: {
         type: 'catch',
@@ -69,7 +65,6 @@ window.SPACE_QUEST = {
     {
       id: 'launch',
       name: 'Космодром',
-      icon: '🚀',
       search: 'Все кристаллы собраны! Найди метку «Космодром»',
       task: {
         type: 'word',
