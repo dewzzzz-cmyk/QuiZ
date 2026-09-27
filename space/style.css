@@ -19,11 +19,12 @@
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+/* Фон только у html: у body он закрыл бы видео с камеры (AR.js кладёт его под body, z-index -2). */
+html { background: var(--space); }
 html, body {
   margin: 0;
   height: 100%;
   overflow: hidden;
-  background: var(--space);
   color: var(--text);
   font-family: var(--font);
   font-weight: 500;
@@ -60,8 +61,9 @@ button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulat
 .link { color: var(--muted); font-size: 15px; text-decoration: underline; text-underline-offset: 4px; }
 .icon-btn {
   width: 52px; height: 52px;
+  padding: 12px;
   border-radius: 16px;
-  font-size: 22px;
+  color: var(--neon);
   display: grid; place-items: center;
 }
 
@@ -81,7 +83,13 @@ button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulat
   overflow-y: auto;
   animation: fade-in 0.6s ease both;
 }
-.logo { font-size: clamp(56px, 9vw, 88px); filter: drop-shadow(0 0 24px rgba(94, 242, 255, 0.6)); animation: float 3.5s ease-in-out infinite; }
+.logo { width: clamp(84px, 13vw, 128px); aspect-ratio: 1; filter: drop-shadow(0 0 28px rgba(94, 242, 255, 0.55)); animation: float 3.5s ease-in-out infinite; }
+.logo-svg { width: 100%; height: 100%; display: block; }
+.icon { width: 100%; height: 100%; display: block; }
+.planets { display: flex; gap: clamp(8px, 2vw, 18px); }
+.planets .icon { width: clamp(38px, 6vw, 56px); height: auto; filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.5)); animation: float 4s ease-in-out infinite; }
+.planets .icon:nth-child(2n) { animation-delay: -1.3s; }
+.planets .icon:nth-child(3n) { animation-delay: -2.4s; }
 .kicker { margin: 0; color: var(--neon); text-transform: uppercase; letter-spacing: 0.22em; font-size: 13px; font-weight: 700; }
 h1 {
   margin: 0;
@@ -143,7 +151,9 @@ h1 {
 .cert-kicker { margin: 0 0 10px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.2em; font-size: 13px; font-weight: 800; }
 .certificate h1 { font-size: clamp(32px, 6vw, 54px); }
 .cert-mission { margin: 10px 0 0; font-size: clamp(17px, 2.2vw, 20px); color: var(--text); }
-.cert-stars { margin: 16px 0; font-size: 30px; letter-spacing: 6px; animation: glow 2s ease-in-out infinite; }
+.cert-stars { display: flex; justify-content: center; gap: 8px; margin: 16px 0; animation: glow 2s ease-in-out infinite; }
+.cert-stars .icon { width: 34px; height: 34px; }
+.cert-emblem { width: 72px; height: 72px; margin: 0 auto 8px; filter: drop-shadow(0 0 18px rgba(94, 242, 255, 0.5)); }
 .cert-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 0; }
 .cert-stats div { padding: 12px 8px; border-radius: 14px; background: rgba(255, 255, 255, 0.05); }
 .cert-stats dt { font-size: 12px; color: var(--muted); }
@@ -170,7 +180,7 @@ h1 {
   width: 36px; height: 36px;
   display: grid; place-items: center;
   border-radius: 50%;
-  font-size: 18px;
+  padding: 4px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.12);
   filter: grayscale(1) opacity(0.45);
@@ -178,7 +188,22 @@ h1 {
 }
 .route li.active { filter: none; border-color: var(--neon); box-shadow: 0 0 16px rgba(94, 242, 255, 0.55); animation: pulse 1.6s ease-in-out infinite; }
 .route li.done { filter: none; background: rgba(74, 222, 128, 0.15); border-color: var(--green); }
-.crystals { display: flex; gap: 6px; align-items: center; padding: 8px 12px; border-radius: 18px; margin-left: auto; }
+.cam-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  border-radius: 18px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+  margin-left: auto;
+}
+.cam-dot { width: 10px; height: 10px; border-radius: 50%; background: #64748b; }
+.cam-badge.live { color: var(--text); }
+.cam-badge.live .cam-dot { background: #ff4d5e; box-shadow: 0 0 10px #ff4d5e; animation: blink 1.2s ease-in-out infinite; }
+.crystals { display: flex; gap: 6px; align-items: center; padding: 8px 12px; border-radius: 18px; }
 
 .crystal-slot {
   width: 36px; height: 42px;
@@ -196,6 +221,28 @@ h1 {
   animation: gem-in 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.4);
 }
 
+/* «Стекло шлема»: виньетка, лёгкие сканлинии и рамка — понятно, что смотришь через бортовую камеру */
+#visor {
+  position: absolute;
+  inset: 0;
+  pointer-events: none !important;
+  background:
+    radial-gradient(ellipse 75% 70% at 50% 50%, transparent 55%, rgba(8, 14, 60, 0.45) 80%, rgba(5, 8, 22, 0.8) 100%),
+    repeating-linear-gradient(0deg, rgba(94, 242, 255, 0.04) 0 1px, transparent 1px 4px);
+  box-shadow: inset 0 0 0 1px rgba(94, 242, 255, 0.18), inset 0 0 80px rgba(94, 242, 255, 0.12);
+}
+#visor::before, #visor::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  width: 34%;
+  height: 2px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent, rgba(94, 242, 255, 0.6), transparent);
+}
+#visor::before { top: calc(78px + env(safe-area-inset-top)); }
+#visor::after { bottom: calc(96px + env(safe-area-inset-bottom)); }
+
 #reticle {
   position: absolute;
   left: 50%; top: 48%;
@@ -208,6 +255,8 @@ h1 {
 }
 #reticle svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 #reticle .corner { fill: none; stroke: var(--neon); stroke-width: 4; stroke-linecap: round; filter: drop-shadow(0 0 6px var(--neon)); animation: breathe 2.4s ease-in-out infinite; transform-origin: 100px 100px; }
+#reticle .sweep { stroke: var(--neon); stroke-width: 2; opacity: 0.6; filter: drop-shadow(0 0 6px var(--neon)); animation: sweep 2.2s ease-in-out infinite; }
+#reticle.scanning .sweep { stroke: var(--gold); animation-duration: 0.7s; }
 #reticle .ring-bg { fill: none; stroke: rgba(255, 255, 255, 0.12); stroke-width: 5; opacity: 0; transition: opacity 0.3s; }
 #reticle .ring { fill: none; stroke: var(--gold); stroke-width: 5; stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 100; transform: rotate(-90deg); transform-origin: 100px 100px; opacity: 0; transition: opacity 0.3s; filter: drop-shadow(0 0 6px var(--gold)); }
 #reticle.scanning .ring, #reticle.scanning .ring-bg { opacity: 1; }
@@ -240,8 +289,10 @@ h1 {
   font-weight: 700;
   animation: rise 0.5s ease both;
 }
-.objective-icon { font-size: 30px; }
-.demo-btn { position: absolute; right: 12px; bottom: calc(110px + env(safe-area-inset-bottom)); padding: 12px 16px; border-radius: 14px; font-weight: 700; }
+.objective-icon { width: 42px; height: 42px; flex: none; }
+.demo-btn { position: absolute; right: 12px; bottom: calc(110px + env(safe-area-inset-bottom)); display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 14px; font-weight: 700; color: var(--neon); }
+.demo-btn [data-icon] { width: 24px; height: 24px; }
+.demo-btn span:last-child { color: var(--text); }
 
 /* ---------- Панель задания ---------- */
 .sheet {
@@ -259,6 +310,8 @@ h1 {
 }
 .sheet.enter { animation: sheet-in 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.15) both; }
 .sheet.compact #panel-text, .sheet.compact h2 { display: none; }
+.sheet-kicker { display: flex; align-items: center; gap: 8px; }
+.sheet-kicker .icon { width: 26px; height: 26px; }
 .sheet-kicker { color: var(--neon); font-size: 13px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
 .sheet h2 { margin: 6px 0 6px; font-family: var(--font-display); font-weight: 400; font-size: clamp(22px, 3vw, 30px); }
 .sheet p { margin: 0 0 16px; color: #d5e0ff; font-size: clamp(16px, 2.1vw, 19px); line-height: 1.45; }
@@ -405,6 +458,13 @@ h1 {
 #countdown-num { font-family: var(--font-display); font-size: clamp(90px, 20vw, 200px); color: #fff; text-shadow: 0 0 40px var(--gold), 0 0 90px var(--red); }
 #countdown-num.pop { animation: count-pop 0.9s ease-out both; }
 
+.cam-loading { z-index: 45; }
+.cam-loading-card { width: min(100%, 420px); padding: 30px 26px; border-radius: 26px; text-align: center; background: var(--glass-strong); }
+.cam-loading-card h2 { margin: 16px 0 8px; font-family: var(--font-display); font-weight: 400; font-size: 26px; }
+.cam-loading-card p { margin: 0; color: var(--muted); line-height: 1.5; }
+.cam-spinner { position: relative; width: 86px; height: 86px; margin: 0 auto; padding: 22px; color: var(--neon); }
+.cam-spinner::before { content: ''; position: absolute; inset: 0; border-radius: 50%; border: 3px solid rgba(94, 242, 255, 0.2); border-top-color: var(--neon); animation: spin 1s linear infinite; }
+
 #toast {
   position: fixed;
   z-index: 40;
@@ -430,6 +490,8 @@ body.quake { animation: quake 0.12s linear infinite; }
 
 /* ---------- Анимации ---------- */
 @keyframes fade-in { from { opacity: 0; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes sweep { 0%, 100% { transform: translateY(-62px); opacity: 0; } 15%, 85% { opacity: 0.7; } 50% { transform: translateY(62px); } }
 @keyframes rise { from { opacity: 0; transform: translate(-50%, 16px); } }
 @keyframes float { 50% { transform: translateY(-10px) rotate(-4deg); } }
 @keyframes blink { 50% { opacity: 0; } }
@@ -452,6 +514,15 @@ body.quake { animation: quake 0.12s linear infinite; }
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
 }
 
+/* Планшет лёжа: панель задания справа, чтобы планета в AR оставалась на виду */
+@media (min-width: 900px) and (min-aspect-ratio: 5/4) {
+  .sheet { left: auto; right: 16px; bottom: 16px; transform: none; width: min(44vw, 460px); max-height: calc(100vh - 110px); }
+  .sheet.enter { animation-name: sheet-side-in; }
+  .order { grid-template-columns: 1fr 1fr; }
+  #reticle { left: 36%; }
+}
+@keyframes sheet-side-in { from { opacity: 0; transform: translateX(40px); } }
+
 /* Невысокий экран (планшет или телефон лёжа): код — табло слева, клавиатура справа */
 @media (max-height: 820px) and (min-width: 700px) {
   .code { grid-template-columns: auto auto; align-items: center; justify-content: center; gap: 28px; }
@@ -464,10 +535,17 @@ body.quake { animation: quake 0.12s linear infinite; }
   .mission-ship { display: none; }
   .mission { padding: 6px 8px; }
   .route { gap: 4px; }
-  .route li { width: 26px; height: 26px; font-size: 14px; }
+  .route li { width: 26px; height: 26px; padding: 2px; }
+  .cam-badge { padding: 0 10px; font-size: 0; gap: 0; }
   .crystals { padding: 6px 8px; gap: 4px; }
   .crystal-slot { width: 24px; height: 30px; font-size: 14px; }
   .icon-btn { width: 44px; height: 44px; font-size: 20px; }
   .keypad { grid-template-columns: repeat(3, 64px); }
   .crystal-btn { width: 58px; height: 68px; font-size: 26px; }
+}
+
+/* Боковая панель узкая — табло кода над клавиатурой (правило стоит после «невысокого экрана») */
+@media (min-width: 900px) and (min-aspect-ratio: 5/4) {
+  .code { grid-template-columns: 1fr; gap: 12px; }
+  .key { height: 52px; }
 }

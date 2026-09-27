@@ -28,6 +28,9 @@
     .card .num { font-family: 'Russo One', sans-serif; font-size: 13px; color: var(--muted); letter-spacing: 0.1em; }
     .card .name { font-family: 'Russo One', sans-serif; font-size: 22px; margin: 2mm 0 3mm; }
     .card img { width: 70mm; height: auto; display: block; margin: 0 auto; }
+    .ti { display: inline-block; width: 20px; height: 20px; vertical-align: -5px; margin-right: 6px; }
+    .ci { display: inline-block; width: 30px; height: 30px; vertical-align: -7px; margin-right: 8px; }
+    .icon { width: 100%; height: 100%; display: block; }
     .toolbar { position: sticky; top: 0; z-index: 1; display: flex; gap: 10px; justify-content: center; padding: 12px; background: #111827; }
     .toolbar button, .toolbar a { font: inherit; font-weight: 800; border: 0; border-radius: 999px; padding: 10px 20px; background: #5ef2ff; color: #04121a; cursor: pointer; text-decoration: none; }
     .toolbar a { background: #374151; color: #fff; }
@@ -42,8 +45,8 @@
 </head>
 <body>
   <div class="toolbar">
-    <button onclick="print()">🖨 Распечатать</button>
-    <a href="index.html">🚀 Открыть квест</a>
+    <button onclick="print()">Распечатать</button>
+    <a href="index.html">Открыть квест</a>
   </div>
 
   <section class="page">
@@ -69,11 +72,11 @@
 
     <table>
       <tr><th>Станция</th><th>Задание</th><th>Где спрятана (впишите)</th></tr>
-      <tr><td>🌙 1 · Луна</td><td>Вопрос: кто первым полетел в космос</td><td class="blank"></td></tr>
-      <tr><td>🔴 2 · Марс</td><td>Код с табло рядом с Марсом — виден только через планшет</td><td class="blank"></td></tr>
-      <tr><td>🪐 3 · Сатурн</td><td>Расставить планеты по порядку от Солнца</td><td class="blank"></td></tr>
-      <tr><td>☄️ 4 · Пояс астероидов</td><td>Мини-игра: поймать 10 кристаллов</td><td class="blank"></td></tr>
-      <tr><td>🚀 5 · Космодром</td><td>Сложить слово запуска и зажать «ПУСК»</td><td class="blank"></td></tr>
+      <tr><td><span class="ti" data-icon="moon"></span>1 · Луна</td><td>Вопрос: кто первым полетел в космос</td><td class="blank"></td></tr>
+      <tr><td><span class="ti" data-icon="mars"></span>2 · Марс</td><td>Код с табло рядом с Марсом — виден только через планшет</td><td class="blank"></td></tr>
+      <tr><td><span class="ti" data-icon="saturn"></span>3 · Сатурн</td><td>Расставить планеты по порядку от Солнца</td><td class="blank"></td></tr>
+      <tr><td><span class="ti" data-icon="belt"></span>4 · Пояс астероидов</td><td>Мини-игра: поймать 10 кристаллов</td><td class="blank"></td></tr>
+      <tr><td><span class="ti" data-icon="launch"></span>5 · Космодром</td><td>Сложить слово запуска и зажать «ПУСК»</td><td class="blank"></td></tr>
     </table>
 
     <div class="note">
@@ -85,18 +88,20 @@
   <section class="page">
     <p class="kicker">Вырежьте по пунктиру</p>
     <div class="cards">
-      <div class="card"><div class="num">СТАНЦИЯ 1</div><div class="name">🌙 Луна</div><img src="markers/moon.svg" alt="Метка Луна"></div>
-      <div class="card"><div class="num">СТАНЦИЯ 2</div><div class="name">🔴 Марс</div><img src="markers/mars.svg" alt="Метка Марс"></div>
-      <div class="card"><div class="num">СТАНЦИЯ 3</div><div class="name">🪐 Сатурн</div><img src="markers/saturn.svg" alt="Метка Сатурн"></div>
-      <div class="card"><div class="num">СТАНЦИЯ 4</div><div class="name">☄️ Пояс астероидов</div><img src="markers/belt.svg" alt="Метка Пояс астероидов"></div>
+      <div class="card"><div class="num">СТАНЦИЯ 1</div><div class="name"><span class="ci" data-icon="moon"></span>Луна</div><img src="markers/moon.svg" alt="Метка Луна"></div>
+      <div class="card"><div class="num">СТАНЦИЯ 2</div><div class="name"><span class="ci" data-icon="mars"></span>Марс</div><img src="markers/mars.svg" alt="Метка Марс"></div>
+      <div class="card"><div class="num">СТАНЦИЯ 3</div><div class="name"><span class="ci" data-icon="saturn"></span>Сатурн</div><img src="markers/saturn.svg" alt="Метка Сатурн"></div>
+      <div class="card"><div class="num">СТАНЦИЯ 4</div><div class="name"><span class="ci" data-icon="belt"></span>Пояс астероидов</div><img src="markers/belt.svg" alt="Метка Пояс астероидов"></div>
     </div>
   </section>
 
   <section class="page">
     <p class="kicker">Вырежьте по пунктиру</p>
     <div class="cards">
-      <div class="card"><div class="num">СТАНЦИЯ 5</div><div class="name">🚀 Космодром</div><img src="markers/launch.svg" alt="Метка Космодром"></div>
+      <div class="card"><div class="num">СТАНЦИЯ 5</div><div class="name"><span class="ci" data-icon="launch"></span>Космодром</div><img src="markers/launch.svg" alt="Метка Космодром"></div>
     </div>
   </section>
+  <script src="icons.js"></script>
+  <script>ICONS.fill();</script>
 </body>
 </html>

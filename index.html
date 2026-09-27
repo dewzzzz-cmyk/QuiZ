@@ -35,7 +35,8 @@
       transition: transform 0.2s, border-color 0.2s;
     }
     a.card:hover { transform: translateY(-4px); border-color: #5ef2ff; }
-    .icon { font-size: 40px; }
+    .icon { font-size: 40px; height: 48px; }
+    .icon svg { width: 48px; height: 48px; }
     .card h2 { margin: 10px 0 6px; font-family: 'Russo One', sans-serif; font-weight: 400; font-size: 22px; }
     .card p { margin: 0; color: #9fb0d6; line-height: 1.45; }
     .tag { display: inline-block; margin-top: 12px; padding: 4px 10px; border-radius: 999px; background: rgba(94, 242, 255, 0.15); color: #5ef2ff; font-size: 13px; font-weight: 700; }
@@ -47,7 +48,7 @@
     <p class="lead">AR-квесты для детских праздников: метки на бумаге, приключение — в планшете.</p>
     <div class="cards">
       <a class="card" href="space/">
-        <div class="icon">🚀</div>
+        <div class="icon" data-icon="logo"></div>
         <h2>Звёздная экспедиция</h2>
         <p>5 станций, 5 типов заданий, ракета и удостоверение космонавта.</p>
         <span class="tag">6–10 лет · 25 минут</span>
@@ -66,5 +67,7 @@
       </a>
     </div>
   </main>
+  <script src="space/icons.js"></script>
+  <script>ICONS.fill();</script>
 </body>
 </html>

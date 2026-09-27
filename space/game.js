@@ -1,6 +1,7 @@
 (() => {
   const Q = window.SPACE_QUEST;
   const { sound, say, burst } = window.FX;
+  const icon = (name, cls) => window.ICONS.svg(name, cls);
   const params = new URLSearchParams(location.search);
   const DEMO = params.has('demo');
   const SCAN_MS = 1400; // сколько держать метку в кадре, чтобы «отсканировать»
@@ -14,7 +15,9 @@
     phase: 'start', // start → brief → search → scan → task → reward → … → launch → done
     letters: [],
     startedAt: 0,
+    camera: false, // видео с камеры уже идёт
   };
+  const visible = new Set(); // метки, которые сейчас в кадре
 
   const fill = (text) => text.replaceAll('{name}', state.name);
   const stars = window.FX.starfield($('stars'));
@@ -43,7 +46,7 @@
     route.replaceChildren(
       ...stations.map((s, i) => {
         const li = document.createElement('li');
-        li.textContent = s.icon;
+        li.innerHTML = icon(s.id);
         li.title = s.name;
         li.className = i < state.current ? 'done' : i === state.current ? 'active' : '';
         return li;
@@ -60,13 +63,15 @@
     const st = stations[state.current];
     const searching = state.phase === 'search' || state.phase === 'scan';
     $('objective').hidden = !searching;
-    $('objective-icon').textContent = st?.icon ?? '';
+    $('objective-icon').innerHTML = st ? icon(st.id) : '';
     $('objective-text').textContent = st?.search ?? '';
     $('reticle').hidden = !searching;
     $('reticle').classList.toggle('scanning', state.phase === 'scan');
     $('reticle-label').textContent = state.phase === 'scan' ? 'Сканирую…' : 'Ищу сигнал…';
     $('demo-btn').hidden = !(DEMO && state.phase === 'search');
-    $('sound-btn').textContent = window.FX.isMuted() ? '🔇' : '🔊';
+    $('sound-btn').innerHTML = icon(window.FX.isMuted() ? 'soundOff' : 'soundOn');
+    $('cam-badge').classList.toggle('live', state.camera);
+    $('cam-label').textContent = state.camera ? 'КАМЕРА' : DEMO ? 'ДЕМО' : 'НЕТ КАМЕРЫ';
 
     stations.forEach((s, i) => {
       const obj = $(`obj-${s.id}`);
@@ -87,6 +92,7 @@
   let scanTick = null;
 
   function onMarkerFound(index) {
+    visible.add(index);
     if (state.phase === 'search') {
       if (index === state.current) return startScan();
       const s = stations[index];
@@ -96,10 +102,18 @@
   }
 
   function onMarkerLost(index) {
+    visible.delete(index);
     if (state.phase === 'scan' && index === state.current) {
       cancelScan();
       toast('Сигнал потерян — держи планшет ровнее');
     }
+  }
+
+  // Метка могла попасть в кадр раньше, чем началась её станция: AR.js второй раз «найдена» не скажет.
+  function enterSearch() {
+    state.phase = 'search';
+    renderHud();
+    if (visible.has(state.current)) startScan();
   }
 
   function startScan() {
@@ -137,7 +151,7 @@
 
   // ---------- Задания ----------
   function openPanel(station) {
-    $('panel-kicker').textContent = `${station.icon} Станция ${stations.indexOf(station) + 1} · ${station.name}`;
+    $('panel-kicker').innerHTML = `${icon(station.id)}<span>Станция ${stations.indexOf(station) + 1} · ${station.name}</span>`;
     $('panel-title').textContent = station.task.title;
     $('panel-text').textContent = station.task.text;
     $('panel').hidden = false;
@@ -421,8 +435,7 @@
     sound.tap();
     $('reward').hidden = true;
     state.current++;
-    state.phase = 'search';
-    renderHud();
+    enterSearch();
     say(stations[state.current].search);
   });
 
@@ -476,6 +489,9 @@
 
   // ---------- Старт и брифинг ----------
   $('start-title').textContent = Q.title;
+  $('start-planets').innerHTML = stations.map((s) => icon(s.id)).join('');
+  $('cert-stars').innerHTML = stations.map(() => icon('star')).join('');
+  window.ICONS.fill();
   $('hud-ship').textContent = Q.ship;
   $('name-input').value = params.get('name') || '';
 
@@ -510,11 +526,37 @@
   $('brief-btn').addEventListener('click', () => {
     sound.tap();
     state.startedAt = Date.now();
-    state.phase = 'search';
     showScreen(null);
-    renderHud();
+    enterSearch();
     say(stations[0].search);
+    if (!state.camera && !DEMO) waitForCamera();
   });
+
+  // ---------- Камера ----------
+  let cameraTimer;
+  function waitForCamera() {
+    $('cam-loading').hidden = false;
+    cameraTimer = setTimeout(() => {
+      $('cam-loading-text').textContent = 'Камера не включается. Проверьте, что браузеру разрешён доступ к камере, и перезагрузите страницу.';
+    }, 8000);
+  }
+  function onCameraReady() {
+    state.camera = true;
+    clearTimeout(cameraTimer);
+    const wasWaiting = !$('cam-loading').hidden;
+    $('cam-loading').hidden = true;
+    renderHud();
+    if (wasWaiting || state.phase === 'search') toast('Камера включена ✓ Наведи планшет на метку', 3500);
+  }
+  window.addEventListener('arjs-video-loaded', () => !state.camera && onCameraReady());
+  // Событие могло прийти раньше, чем подписались: проверяем само видео.
+  const videoPoll = setInterval(() => {
+    const v = document.querySelector('video');
+    if (v && v.readyState >= 2 && v.videoWidth) {
+      clearInterval(videoPoll);
+      if (!state.camera) onCameraReady();
+    }
+  }, 500);
 
   $('restart-btn').addEventListener('click', () => location.reload());
 
@@ -532,15 +574,20 @@
 
   // Код для табло на Марсе берём из данных квеста.
   const codeTask = stations.find((s) => s.task.type === 'code');
-  if (codeTask) $('mars-code')?.setAttribute('value', [...codeTask.task.code].join(' '));
+  if (codeTask) $('mars-holo')?.setAttribute('hologram', 'text', codeTask.task.code);
 
   window.addEventListener('camera-error', () => {
     if (DEMO) return;
+    clearTimeout(cameraTimer);
+    $('cam-loading').hidden = true;
     showScreen('screen-camera');
   });
 
   // ?demo — кнопка вместо метки, чтобы пройти квест без камеры и распечатки.
-  $('demo-btn').addEventListener('click', () => onMarkerFound(state.current));
+  $('demo-btn').addEventListener('click', () => {
+    onMarkerFound(state.current);
+    visible.delete(state.current); // в демо «метка» сразу уходит из кадра
+  });
 
   showScreen('screen-start');
 })();
