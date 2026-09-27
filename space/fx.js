@@ -1,53 +1,6 @@
-// Эффекты: звёздное небо, синтезированные звуки, голос бортового компьютера, салют из звёзд.
+// Эффекты: синтезированные звуки, голос бортового компьютера, искры.
 // Всё генерируется в браузере — никаких аудио- и видеофайлов.
 window.FX = (() => {
-  // ---------- Звёздное небо (canvas) ----------
-  function starfield(canvas) {
-    const ctx = canvas.getContext('2d');
-    let w, h, stars, speed = 0.4, target = 0.4, raf = null;
-
-    function resize() {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      w = canvas.clientWidth;
-      h = canvas.clientHeight;
-      canvas.width = w * dpr;
-      canvas.height = h * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      stars = Array.from({ length: Math.round((w * h) / 2500) }, spawn);
-    }
-    function spawn() {
-      return { x: (Math.random() - 0.5) * w * 2, y: (Math.random() - 0.5) * h * 2, z: Math.random() * w, hue: Math.random() < 0.2 ? 190 : Math.random() < 0.3 ? 265 : 0 };
-    }
-    function frame() {
-      speed += (target - speed) * 0.04;
-      ctx.fillStyle = 'rgba(5, 8, 22, 0.35)';
-      ctx.fillRect(0, 0, w, h);
-      for (const s of stars) {
-        const pz = s.z;
-        s.z -= speed * 4;
-        if (s.z < 1) Object.assign(s, spawn(), { z: w });
-        const k = 160 / s.z, pk = 160 / pz;
-        const x = w / 2 + s.x * k, y = h / 2 + s.y * k;
-        const px = w / 2 + s.x * pk, py = h / 2 + s.y * pk;
-        const a = Math.min(1, 1.2 - s.z / w);
-        ctx.strokeStyle = s.hue ? `hsla(${s.hue}, 100%, 75%, ${a})` : `rgba(255,255,255,${a})`;
-        ctx.lineWidth = Math.max(0.5, 2.2 - s.z / (w / 2));
-        ctx.beginPath();
-        ctx.moveTo(px, py);
-        ctx.lineTo(x + 0.1, y + 0.1);
-        ctx.stroke();
-      }
-      raf = requestAnimationFrame(frame);
-    }
-    window.addEventListener('resize', resize);
-    resize();
-    return {
-      start() { if (!raf) frame(); },
-      stop() { cancelAnimationFrame(raf); raf = null; },
-      warp(on) { target = on ? 14 : 0.4; },
-    };
-  }
-
   // ---------- Звуки (Web Audio) ----------
   let audio = null;
   let muted = false;
@@ -140,11 +93,11 @@ window.FX = (() => {
       el.style.top = `${y}px`;
       el.style.setProperty('--dx', `${Math.cos(angle) * dist}px`);
       el.style.setProperty('--dy', `${Math.sin(angle) * dist}px`);
-      el.style.color = ['#5ef2ff', '#ffd166', '#a78bfa', '#ffffff'][i % 4];
+      el.style.color = ['#f5a524', '#ffe2b0', '#ffffff'][i % 3];
       document.body.append(el);
       setTimeout(() => el.remove(), 900);
     }
   }
 
-  return { starfield, unlock, sound, say, burst, setMuted, isMuted: () => muted };
+  return { unlock, sound, say, burst, setMuted, isMuted: () => muted };
 })();

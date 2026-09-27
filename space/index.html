@@ -3,11 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#050816">
-  <title>Звёздная экспедиция · AR-квест</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Russo+One&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#03050a">
+  <title>Звёздная экспедиция · AR-миссия</title>
+  <link rel="stylesheet" href="fonts.css">
+  <link rel="preload" as="image" href="art/hero.jpg">
   <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
   <script src="ar.js"></script>
@@ -15,143 +14,135 @@
 </head>
 <body>
   <!-- ================= AR-сцена =================
-       Единица длины = размер метки. Ось Y смотрит из метки на зрителя: всё, что «выше», ближе к камере. -->
+       Единица длины = размер метки. Ось Y смотрит из метки на зрителя.
+       Текстуры планет — space/textures (генерирует tools/space-art). -->
   <a-scene embedded
            arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono; cameraParametersUrl: data/camera_para.dat;"
            vr-mode-ui="enabled: false"
-           renderer="antialias: true; alpha: true; logarithmicDepthBuffer: true; precision: high;">
+           renderer="antialias: true; alpha: true; logarithmicDepthBuffer: true; precision: high; colorManagement: true;">
 
-    <a-entity light="type: ambient; color: #c7d2ff; intensity: 0.55"></a-entity>
-    <a-entity light="type: directional; color: #fff4e0; intensity: 1.1" position="-1 2 1.2"></a-entity>
+    <a-entity light="type: ambient; color: #a8b8ff; intensity: 0.16"></a-entity>
+    <a-entity light="type: directional; color: #fff1dc; intensity: 1.7" position="-1.3 1.4 0.9"></a-entity>
 
-    <!-- Станция 1 · Луна: портал в космос, Луна с кратерами, спутник на орбите -->
+    <!-- 01 · Луна -->
     <a-marker id="marker-moon" type="pattern" url="markers/moon.patt" emitevents="true" smooth="true" smoothCount="8">
       <a-entity id="obj-moon" visible="false">
-        <a-entity space-portal="radius: 0.95; color: #5ef2ff"></a-entity>
-        <a-entity star-dust="count: 150; radius: 1.1; height: 1.1"></a-entity>
-        <a-entity planet="type: moon; radius: 0.36; atmosphere: #cfe8ff; spin: 40" position="0 0.5 0"></a-entity>
-        <a-entity position="0 0.5 0" rotation="12 0 -8">
-          <a-entity animation="property: rotation; to: 0 360 0; loop: true; dur: 7000; easing: linear">
-            <a-entity position="0.66 0 0" rotation="0 0 20">
-              <a-box width="0.08" height="0.08" depth="0.08" color="#e9c46a" material="metalness: 0.6; roughness: 0.3"></a-box>
-              <a-box width="0.34" height="0.006" depth="0.08" color="#1d4ed8" material="emissive: #1e3a8a; emissiveIntensity: 0.6; metalness: 0.4"></a-box>
-              <a-sphere radius="0.012" position="0 0.06 0" color="#ff5d73" material="emissive: #ff5d73; emissiveIntensity: 1"
-                        animation="property: scale; from: 1 1 1; to: 2 2 2; dir: alternate; loop: true; dur: 500"></a-sphere>
+        <a-entity space-portal="radius: 0.95"></a-entity>
+        <a-entity star-dust="count: 90; radius: 1.1; height: 1.1"></a-entity>
+        <a-entity planet="type: moon; radius: 0.36; spin: 60" position="0 0.5 0" rotation="-52 0 8"></a-entity>
+        <a-entity position="0 0.5 0" rotation="14 0 -10">
+          <a-entity animation="property: rotation; to: 0 360 0; loop: true; dur: 9000; easing: linear">
+            <a-entity position="0.64 0 0" rotation="0 30 18" scale="0.9 0.9 0.9">
+              <a-box width="0.06" height="0.07" depth="0.06" color="#d9b25f" material="metalness: 0.3; roughness: 0.45"></a-box>
+              <a-box width="0.13" height="0.004" depth="0.06" position="0.1 0 0" color="#1a2233" material="metalness: 0.6; roughness: 0.25"></a-box>
+              <a-box width="0.13" height="0.004" depth="0.06" position="-0.1 0 0" color="#1a2233" material="metalness: 0.6; roughness: 0.25"></a-box>
+              <a-cylinder radius="0.022" height="0.006" position="0 0.045 0" color="#e5e7eb" material="metalness: 0.5; roughness: 0.4"></a-cylinder>
             </a-entity>
           </a-entity>
         </a-entity>
       </a-entity>
     </a-marker>
 
-    <!-- Станция 2 · Марс: марсоход едет по планете, из антенны — голограмма с кодом -->
+    <!-- 02 · Марс: марсоход едет по планете, из антенны — голограмма с кодом -->
     <a-marker id="marker-mars" type="pattern" url="markers/mars.patt" emitevents="true" smooth="true" smoothCount="8">
       <a-entity id="obj-mars" visible="false">
-        <a-entity space-portal="radius: 0.95; color: #ff8a5c"></a-entity>
-        <a-entity star-dust="count: 130; radius: 1.1; height: 1.1"></a-entity>
-        <a-entity planet="type: mars; radius: 0.32; atmosphere: #ff9a6b; spin: 16" position="-0.15 0.44 0"></a-entity>
-        <!-- Марсоход стоит на «макушке» планеты, планета крутится под ним — будто он едет -->
+        <a-entity space-portal="radius: 0.95"></a-entity>
+        <a-entity star-dust="count: 80; radius: 1.1; height: 1.1"></a-entity>
+        <a-entity planet="type: mars; radius: 0.32; atmosphere: #ff8a5c; spin: 24" position="-0.15 0.44 0" rotation="-48 0 10"></a-entity>
         <a-entity position="-0.15 0.755 0" scale="0.8 0.8 0.8">
-          <a-box width="0.2" height="0.05" depth="0.13" position="0 0.045 0" color="#e5e7eb" material="metalness: 0.4; roughness: 0.4"></a-box>
-          <a-box width="0.18" height="0.008" depth="0.14" position="0 0.075 0" color="#1d4ed8" material="emissive: #1e3a8a; emissiveIntensity: 0.5"></a-box>
-          <a-cylinder radius="0.028" height="0.022" rotation="90 0 0" position="-0.07 0.012 0.075" color="#374151"></a-cylinder>
-          <a-cylinder radius="0.028" height="0.022" rotation="90 0 0" position="0 0.012 0.075" color="#374151"></a-cylinder>
-          <a-cylinder radius="0.028" height="0.022" rotation="90 0 0" position="0.07 0.012 0.075" color="#374151"></a-cylinder>
-          <a-cylinder radius="0.028" height="0.022" rotation="90 0 0" position="-0.07 0.012 -0.075" color="#374151"></a-cylinder>
-          <a-cylinder radius="0.028" height="0.022" rotation="90 0 0" position="0 0.012 -0.075" color="#374151"></a-cylinder>
-          <a-cylinder radius="0.028" height="0.022" rotation="90 0 0" position="0.07 0.012 -0.075" color="#374151"></a-cylinder>
-          <a-cylinder radius="0.008" height="0.12" position="0.06 0.14 0" color="#9ca3af"></a-cylinder>
-          <a-box width="0.05" height="0.03" depth="0.04" position="0.06 0.2 0" color="#f3f4f6"></a-box>
-          <a-sphere radius="0.012" position="0.085 0.2 0" color="#5ef2ff" material="emissive: #5ef2ff; emissiveIntensity: 1"></a-sphere>
-          <a-entity position="-0.06 0.12 0" glow="color: #5ef2ff; size: 0.14; opacity: 0.9; pulse: 150"></a-entity>
+          <a-box width="0.2" height="0.045" depth="0.13" position="0 0.045 0" color="#d6d3cc" material="metalness: 0.35; roughness: 0.55"></a-box>
+          <a-box width="0.17" height="0.006" depth="0.12" position="0 0.071 0" color="#1b2130" material="metalness: 0.7; roughness: 0.25"></a-box>
+          <a-cylinder radius="0.026" height="0.02" rotation="90 0 0" position="-0.07 0.012 0.074" color="#2a2d33" material="roughness: 0.9"></a-cylinder>
+          <a-cylinder radius="0.026" height="0.02" rotation="90 0 0" position="0 0.012 0.074" color="#2a2d33" material="roughness: 0.9"></a-cylinder>
+          <a-cylinder radius="0.026" height="0.02" rotation="90 0 0" position="0.07 0.012 0.074" color="#2a2d33" material="roughness: 0.9"></a-cylinder>
+          <a-cylinder radius="0.026" height="0.02" rotation="90 0 0" position="-0.07 0.012 -0.074" color="#2a2d33" material="roughness: 0.9"></a-cylinder>
+          <a-cylinder radius="0.026" height="0.02" rotation="90 0 0" position="0 0.012 -0.074" color="#2a2d33" material="roughness: 0.9"></a-cylinder>
+          <a-cylinder radius="0.026" height="0.02" rotation="90 0 0" position="0.07 0.012 -0.074" color="#2a2d33" material="roughness: 0.9"></a-cylinder>
+          <a-cylinder radius="0.007" height="0.12" position="0.06 0.13 0" color="#b8bec7" material="metalness: 0.2"></a-cylinder>
+          <a-box width="0.05" height="0.028" depth="0.035" position="0.06 0.2 0" color="#e5e2da" material="metalness: 0.3; roughness: 0.5"></a-box>
+          <a-sphere radius="0.009" position="0.086 0.2 0" color="#f5a524" material="emissive: #f5a524; emissiveIntensity: 1"></a-sphere>
+          <a-entity position="-0.06 0.12 0" glow="color: #f5a524; size: 0.1; opacity: 0.7; pulse: 160"></a-entity>
         </a-entity>
-        <!-- Луч от антенны к голограмме -->
-        <!-- Голограмма наклонена на 45° к зрителю: читается и когда метка на столе, и когда на стене -->
         <a-cone radius-bottom="0.006" radius-top="0.07" height="0.4" position="0.03 0.8 0.03" rotation="0 0 -118"
-                material="color: #5ef2ff; opacity: 0.14; transparent: true; blending: additive; depthWrite: false; side: double"></a-cone>
+                material="color: #f5a524; opacity: 0.1; transparent: true; blending: additive; depthWrite: false; side: double"></a-cone>
         <a-entity id="mars-holo" hologram="text: 000; width: 0.78" position="0.6 0.7 0.05" rotation="-45 0 0"
-                  animation="property: position; from: 0.6 0.68 0.05; to: 0.6 0.73 0.05; dir: alternate; loop: true; dur: 1800; easing: easeInOutSine"></a-entity>
+                  animation="property: position; from: 0.6 0.68 0.05; to: 0.6 0.72 0.05; dir: alternate; loop: true; dur: 2200; easing: easeInOutSine"></a-entity>
       </a-entity>
     </a-marker>
 
-    <!-- Станция 3 · Сатурн: полосатая планета, кольца с щелью Кассини, спутник -->
+    <!-- 03 · Сатурн -->
     <a-marker id="marker-saturn" type="pattern" url="markers/saturn.patt" emitevents="true" smooth="true" smoothCount="8">
       <a-entity id="obj-saturn" visible="false">
-        <a-entity space-portal="radius: 0.95; color: #ffd166"></a-entity>
-        <a-entity star-dust="count: 150; radius: 1.1; height: 1.1"></a-entity>
-        <a-entity position="0 0.5 0" rotation="22 0 14">
-          <a-entity planet="type: saturn; radius: 0.3; atmosphere: #ffe3a3; spin: 12"></a-entity>
-          <a-entity planet-ring="inner: 0.4; outer: 0.72"></a-entity>
+        <a-entity space-portal="radius: 0.95"></a-entity>
+        <a-entity star-dust="count: 90; radius: 1.1; height: 1.1"></a-entity>
+        <a-entity position="0 0.5 0" rotation="-26 0 14">
+          <a-entity planet="type: saturn; radius: 0.28; atmosphere: #f3dcaa; spin: 14"></a-entity>
+          <a-entity planet-ring="inner: 0.35; outer: 0.66"></a-entity>
         </a-entity>
-        <a-entity position="0 0.5 0" animation="property: rotation; to: 0 360 0; loop: true; dur: 10000; easing: linear">
-          <a-entity planet="type: moon; radius: 0.045; spin: 0" position="0.88 0.08 0"></a-entity>
+        <a-entity position="0 0.5 0" animation="property: rotation; to: 0 360 0; loop: true; dur: 12000; easing: linear">
+          <a-entity planet="type: moon; radius: 0.04; spin: 0" position="0.86 0.08 0" rotation="-50 0 0"></a-entity>
         </a-entity>
       </a-entity>
     </a-marker>
 
-    <!-- Станция 4 · Пояс астероидов: кристалл в центре, камни на двух орбитах -->
+    <!-- 04 · Пояс астероидов: навигационный кристалл среди камней -->
     <a-marker id="marker-belt" type="pattern" url="markers/belt.patt" emitevents="true" smooth="true" smoothCount="8">
       <a-entity id="obj-belt" visible="false">
-        <a-entity space-portal="radius: 0.95; color: #a78bfa"></a-entity>
-        <a-entity star-dust="count: 170; radius: 1.1; height: 1.1"></a-entity>
+        <a-entity space-portal="radius: 0.95"></a-entity>
+        <a-entity star-dust="count: 110; radius: 1.1; height: 1.1"></a-entity>
         <a-entity position="0 0.48 0">
-          <a-octahedron radius="0.2" scale="0.8 1.3 0.8" color="#c4b5fd" material="emissive: #7c3aed; emissiveIntensity: 0.8; metalness: 0.2; roughness: 0.15; opacity: 0.92; transparent: true"
-                        animation="property: rotation; to: 0 360 0; loop: true; dur: 4000; easing: linear"></a-octahedron>
-          <a-entity glow="color: #a78bfa; size: 0.9; opacity: 0.8; pulse: 300"></a-entity>
-          <a-entity rotation="10 0 0" animation="property: rotation; from: 10 0 0; to: 10 360 0; loop: true; dur: 14000; easing: linear">
+          <a-octahedron radius="0.17" scale="0.75 1.35 0.75" color="#e6f4ff" material="emissive: #7dd3fc; emissiveIntensity: 0.35; metalness: 0.1; roughness: 0.05; opacity: 0.82; transparent: true"
+                        animation="property: rotation; to: 0 360 0; loop: true; dur: 6000; easing: linear"></a-octahedron>
+          <a-entity glow="color: #9bd8ff; size: 0.7; opacity: 0.55; pulse: 420"></a-entity>
+          <a-entity rotation="10 0 0" animation="property: rotation; from: 10 0 0; to: 10 360 0; loop: true; dur: 16000; easing: linear">
             <a-entity asteroid="size: 0.1; seed: 1" position="0.62 0 0"></a-entity>
             <a-entity asteroid="size: 0.07; seed: 2" position="-0.5 0.04 0.32"></a-entity>
             <a-entity asteroid="size: 0.085; seed: 3" position="0.1 -0.03 -0.62"></a-entity>
             <a-entity asteroid="size: 0.05; seed: 4" position="-0.2 0.06 0.6"></a-entity>
-            <a-octahedron radius="0.035" position="0.35 0.05 0.5" color="#5ef2ff" material="emissive: #5ef2ff; emissiveIntensity: 1"></a-octahedron>
           </a-entity>
-          <a-entity rotation="-8 0 0" animation="property: rotation; from: -8 0 0; to: -8 -360 0; loop: true; dur: 9000; easing: linear">
+          <a-entity rotation="-8 0 0" animation="property: rotation; from: -8 0 0; to: -8 -360 0; loop: true; dur: 11000; easing: linear">
             <a-entity asteroid="size: 0.06; seed: 5" position="0.82 0.05 0.1"></a-entity>
             <a-entity asteroid="size: 0.09; seed: 6" position="-0.78 -0.04 -0.2"></a-entity>
             <a-entity asteroid="size: 0.045; seed: 7" position="0.2 0.02 0.8"></a-entity>
-            <a-octahedron radius="0.03" position="-0.4 0.03 -0.7" color="#ffd166" material="emissive: #ffd166; emissiveIntensity: 1"></a-octahedron>
           </a-entity>
         </a-entity>
       </a-entity>
     </a-marker>
 
-    <!-- Станция 5 · Космодром: стартовый стол, башня обслуживания, ракета -->
+    <!-- 05 · Космодром -->
     <a-marker id="marker-launch" type="pattern" url="markers/launch.patt" emitevents="true" smooth="true" smoothCount="8">
       <a-entity id="obj-launch" visible="false">
-        <a-entity space-portal="radius: 0.95; color: #ffd166"></a-entity>
-        <a-entity star-dust="count: 130; radius: 1.1; height: 1.3"></a-entity>
-        <a-cylinder radius="0.42" height="0.05" position="0 0.025 0" color="#3f4654" material="metalness: 0.5; roughness: 0.5"></a-cylinder>
-        <a-ring radius-inner="0.34" radius-outer="0.38" rotation="-90 0 0" position="0 0.052 0" color="#ffd166" material="emissive: #ffd166; emissiveIntensity: 0.7"></a-ring>
-        <a-ring radius-inner="0.15" radius-outer="0.17" rotation="-90 0 0" position="0 0.052 0" color="#ff5d73" material="emissive: #ff5d73; emissiveIntensity: 0.7"></a-ring>
-        <!-- Башня -->
+        <a-entity space-portal="radius: 0.95"></a-entity>
+        <a-entity star-dust="count: 80; radius: 1.1; height: 1.3"></a-entity>
+        <a-cylinder radius="0.42" height="0.05" position="0 0.025 0" color="#6b6f76" material="roughness: 0.95"></a-cylinder>
+        <a-ring radius-inner="0.36" radius-outer="0.375" rotation="-90 0 0" position="0 0.052 0" color="#f5a524" material="emissive: #f5a524; emissiveIntensity: 0.4"></a-ring>
         <a-entity position="0.27 0 0">
-          <a-box width="0.05" height="0.95" depth="0.05" position="0 0.5 0" color="#cbd5e1" material="metalness: 0.3; roughness: 0.5; emissive: #334155; emissiveIntensity: 0.6"></a-box>
-          <a-box width="0.16" height="0.02" depth="0.03" position="-0.07 0.7 0" color="#ff5d73"></a-box>
-          <a-box width="0.16" height="0.02" depth="0.03" position="-0.07 0.4 0" color="#9ca3af"></a-box>
-          <a-sphere radius="0.018" position="0 0.99 0" color="#ff5d73" material="emissive: #ff5d73; emissiveIntensity: 1"
-                    animation="property: material.emissiveIntensity; from: 0.2; to: 1; dir: alternate; loop: true; dur: 600"></a-sphere>
+          <a-box width="0.045" height="0.95" depth="0.045" position="0 0.5 0" color="#b4b9c1" material="metalness: 0.15; roughness: 0.6"></a-box>
+          <a-box width="0.15" height="0.018" depth="0.025" position="-0.07 0.72 0" color="#b4b9c1" material="metalness: 0.15; roughness: 0.6"></a-box>
+          <a-box width="0.15" height="0.018" depth="0.025" position="-0.07 0.42 0" color="#b4b9c1" material="metalness: 0.15; roughness: 0.6"></a-box>
+          <a-sphere radius="0.014" position="0 0.99 0" color="#ff4d4d" material="emissive: #ff3b3b; emissiveIntensity: 1"
+                    animation="property: material.emissiveIntensity; from: 0.15; to: 1; dir: alternate; loop: true; dur: 700"></a-sphere>
         </a-entity>
-        <!-- Ракета -->
         <a-entity id="rocket" position="0 0.06 0">
-          <a-cylinder radius="0.09" height="0.52" position="0 0.36 0" color="#f8fafc" material="metalness: 0.3; roughness: 0.35"></a-cylinder>
-          <a-cylinder radius="0.092" height="0.04" position="0 0.52 0" color="#e63946"></a-cylinder>
-          <a-cylinder radius="0.092" height="0.03" position="0 0.2 0" color="#1e293b"></a-cylinder>
-          <a-cone radius-bottom="0.09" radius-top="0.004" height="0.24" position="0 0.74 0" color="#e63946" material="metalness: 0.3; roughness: 0.35"></a-cone>
-          <a-circle radius="0.034" position="0 0.42 0.0905" color="#5ef2ff" material="emissive: #0ea5e9; emissiveIntensity: 0.8"></a-circle>
-          <a-torus radius="0.036" radius-tubular="0.006" position="0 0.42 0.09" color="#94a3b8"></a-torus>
+          <a-cylinder radius="0.075" height="0.56" position="0 0.38 0" color="#eceef0" material="metalness: 0.2; roughness: 0.45"></a-cylinder>
+          <a-cylinder radius="0.077" height="0.03" position="0 0.56 0" color="#2c3038" material="roughness: 0.6"></a-cylinder>
+          <a-cylinder radius="0.077" height="0.02" position="0 0.22 0" color="#2c3038" material="roughness: 0.6"></a-cylinder>
+          <a-cone radius-bottom="0.075" radius-top="0.018" height="0.2" position="0 0.76 0" color="#eceef0" material="metalness: 0.2; roughness: 0.45"></a-cone>
+          <a-cylinder radius="0.018" height="0.08" position="0 0.9 0" color="#b8bec7" material="metalness: 0.2"></a-cylinder>
           <a-entity rotation="0 45 0">
-            <a-box width="0.012" height="0.17" depth="0.1" position="0 0.17 0.12" rotation="-12 0 0" color="#e63946"></a-box>
-            <a-box width="0.012" height="0.17" depth="0.1" position="0 0.17 -0.12" rotation="12 0 0" color="#e63946"></a-box>
-            <a-box width="0.1" height="0.17" depth="0.012" position="0.12 0.17 0" rotation="0 0 12" color="#e63946"></a-box>
-            <a-box width="0.1" height="0.17" depth="0.012" position="-0.12 0.17 0" rotation="0 0 -12" color="#e63946"></a-box>
+            <a-box width="0.01" height="0.14" depth="0.08" position="0 0.16 0.1" rotation="-10 0 0" color="#b8bec7" material="metalness: 0.15; roughness: 0.5"></a-box>
+            <a-box width="0.01" height="0.14" depth="0.08" position="0 0.16 -0.1" rotation="10 0 0" color="#b8bec7" material="metalness: 0.15; roughness: 0.5"></a-box>
+            <a-box width="0.08" height="0.14" depth="0.01" position="0.1 0.16 0" rotation="0 0 10" color="#b8bec7" material="metalness: 0.15; roughness: 0.5"></a-box>
+            <a-box width="0.08" height="0.14" depth="0.01" position="-0.1 0.16 0" rotation="0 0 -10" color="#b8bec7" material="metalness: 0.15; roughness: 0.5"></a-box>
           </a-entity>
-          <a-cone radius-bottom="0.065" radius-top="0.045" height="0.06" position="0 0.07 0" color="#334155" material="metalness: 0.7; roughness: 0.3"></a-cone>
+          <a-cone radius-bottom="0.055" radius-top="0.035" height="0.06" position="0 0.07 0" color="#2a2e35" material="metalness: 0.3; roughness: 0.5"></a-cone>
           <a-entity id="flame" position="0 0.02 0">
-            <a-cone radius-bottom="0.06" radius-top="0.001" height="0.22" position="0 -0.09 0" rotation="180 0 0"
-                    material="color: #ff7a1a; emissive: #ff5a00; emissiveIntensity: 1; opacity: 0.85; transparent: true; blending: additive; depthWrite: false"
-                    animation="property: scale; from: 0.85 0.7 0.85; to: 1.1 1.25 1.1; dir: alternate; loop: true; dur: 110"></a-cone>
-            <a-cone radius-bottom="0.03" radius-top="0.001" height="0.13" position="0 -0.05 0" rotation="180 0 0"
-                    material="color: #fff3b0; emissive: #ffe066; emissiveIntensity: 1; transparent: true; blending: additive; depthWrite: false"></a-cone>
-            <a-entity glow="color: #ff9f1c; size: 0.45; opacity: 0.9; pulse: 90" position="0 -0.08 0"></a-entity>
+            <a-cone radius-bottom="0.05" radius-top="0.001" height="0.24" position="0 -0.1 0" rotation="180 0 0"
+                    material="color: #ff8a2a; emissive: #ff6a00; emissiveIntensity: 1; opacity: 0.55; transparent: true; blending: additive; depthWrite: false"
+                    animation="property: scale; from: 0.85 0.75 0.85; to: 1.05 1.2 1.05; dir: alternate; loop: true; dur: 90"></a-cone>
+            <a-cone radius-bottom="0.025" radius-top="0.001" height="0.13" position="0 -0.05 0" rotation="180 0 0"
+                    material="color: #fff6d8; emissive: #fff0b8; emissiveIntensity: 1; transparent: true; blending: additive; depthWrite: false"></a-cone>
+            <a-entity glow="color: #ffb066; size: 0.38; opacity: 0.75; pulse: 80" position="0 -0.08 0"></a-entity>
           </a-entity>
         </a-entity>
       </a-entity>
@@ -160,40 +151,48 @@
     <a-entity camera></a-entity>
   </a-scene>
 
-  <!-- ================= Интерфейс поверх камеры ================= -->
+  <!-- ================= HUD поверх камеры ================= -->
   <div id="hud" hidden>
     <div id="visor" aria-hidden="true"></div>
+
     <header class="topbar">
-      <div class="mission glass">
-        <span class="mission-ship" id="hud-ship"></span>
+      <div class="hud-block mission">
+        <div class="hud-label"><span id="hud-ship"></span> · МАРШРУТ</div>
         <ol class="route" id="route"></ol>
       </div>
-      <div class="cam-badge glass" id="cam-badge"><span class="cam-dot"></span><span id="cam-label">КАМЕРА</span></div>
-      <div class="crystals glass" id="crystals" aria-label="Собранные кристаллы"></div>
-      <button class="icon-btn glass" id="sound-btn" aria-label="Звук"></button>
+      <div class="hud-right">
+        <div class="hud-block cam" id="cam-badge"><span class="cam-dot"></span><span id="cam-label">CAM</span></div>
+        <div class="hud-block cargo">
+          <div class="hud-label">КРИСТАЛЛЫ <span id="cargo-count">0/4</span></div>
+          <div class="slots" id="crystals"></div>
+        </div>
+        <button class="hud-block icon-btn" id="sound-btn" aria-label="Звук"></button>
+      </div>
     </header>
 
     <div id="reticle" aria-hidden="true">
-      <svg viewBox="0 0 200 200">
-        <path class="corner" d="M20 60 V20 H60"/><path class="corner" d="M140 20 H180 V60"/>
-        <path class="corner" d="M180 140 V180 H140"/><path class="corner" d="M60 180 H20 V140"/>
-        <line class="sweep" x1="28" y1="100" x2="172" y2="100"/>
-        <circle class="ring-bg" cx="100" cy="100" r="46"/>
-        <circle class="ring" id="scan-ring" cx="100" cy="100" r="46" pathLength="100"/>
-      </svg>
-      <span id="reticle-label">Ищу сигнал…</span>
+      <span class="tick tl"></span><span class="tick tr"></span><span class="tick bl"></span><span class="tick br"></span>
+      <span class="cross"></span>
+      <div class="scanbar"><span id="scan-fill"></span></div>
+      <div class="reticle-label"><span id="reticle-label">ПОИСК СИГНАЛА</span><span id="scan-pct"></span></div>
     </div>
 
-    <div class="objective glass" id="objective">
-      <span class="objective-icon" id="objective-icon"></span>
-      <span id="objective-text"></span>
+    <div class="objective" id="objective">
+      <div class="objective-thumb" id="objective-icon"></div>
+      <div>
+        <div class="hud-label" id="objective-label"></div>
+        <div class="objective-text" id="objective-text"></div>
+      </div>
     </div>
 
-    <button class="demo-btn glass" id="demo-btn" hidden><span data-icon="antenna"></span>Симулировать метку</button>
+    <button class="demo-btn" id="demo-btn" hidden><span data-line="antenna"></span>Симулировать метку</button>
   </div>
 
-  <section class="sheet glass" id="panel" hidden>
-    <div class="sheet-kicker" id="panel-kicker"></div>
+  <section class="sheet" id="panel" hidden>
+    <header class="sheet-head">
+      <span class="sheet-thumb" id="panel-thumb"></span>
+      <span class="hud-label" id="panel-kicker"></span>
+    </header>
     <h2 id="panel-title"></h2>
     <p id="panel-text"></p>
     <div id="panel-body"></div>
@@ -202,19 +201,21 @@
   <div id="catch-layer" hidden></div>
 
   <div class="overlay" id="reward" hidden>
-    <div class="reward-card glass">
-      <div class="crystal-big"><span id="reward-letter"></span></div>
+    <div class="reward">
+      <div class="hud-label accent" id="reward-kicker"></div>
+      <div class="reward-letter"><span id="reward-letter"></span></div>
       <h2 id="reward-title"></h2>
-      <p class="fact" id="reward-fact"></p>
-      <button class="btn" id="reward-btn">Продолжить миссию</button>
+      <div class="fact"><div class="hud-label">СПРАВКА</div><p id="reward-fact"></p></div>
+      <button class="btn" id="reward-btn">Далее <span data-line="arrow"></span></button>
     </div>
   </div>
 
   <div class="overlay countdown" id="countdown" hidden><span id="countdown-num"></span></div>
 
   <div class="overlay cam-loading" id="cam-loading" hidden>
-    <div class="cam-loading-card glass">
-      <div class="cam-spinner"><span data-icon="camera"></span></div>
+    <div class="cam-card">
+      <div class="cam-spinner"><span data-line="camera"></span></div>
+      <div class="hud-label">БОРТОВАЯ КАМЕРА</div>
       <h2>Включаю камеру…</h2>
       <p id="cam-loading-text">Если браузер спросит доступ к камере — нажмите «Разрешить».</p>
     </div>
@@ -224,51 +225,76 @@
 
   <!-- ================= Экраны вне AR ================= -->
   <div id="screens">
-    <canvas id="stars"></canvas>
-
-    <section class="screen" id="screen-start">
-      <div class="logo" data-icon="logo" data-icon-class="logo-svg"></div>
-      <p class="kicker">AR-квест</p>
-      <h1 id="start-title"></h1>
-      <p class="lead">Космическое приключение прямо у тебя дома. Нужен планшет или телефон и распечатанные метки станций.</p>
-      <div class="planets" id="start-planets"></div>
-      <label class="field">
-        <span>Как зовут капитана?</span>
-        <input id="name-input" maxlength="30" placeholder="Имя капитана" autocomplete="off">
-      </label>
-      <button class="btn btn-big" id="start-btn">На борт!</button>
-      <a class="link" href="print.html" target="_blank" rel="noopener">Метки для печати и инструкция для взрослых</a>
-    </section>
-
-    <section class="screen" id="screen-brief" hidden>
-      <p class="kicker">Входящее сообщение · бортовой компьютер</p>
-      <div class="terminal glass"><p id="brief-text"></p><span class="caret"></span></div>
-      <button class="btn btn-big" id="brief-btn" disabled>Начать миссию</button>
-    </section>
-
-    <section class="screen" id="screen-final" hidden>
-      <div class="certificate">
-        <div class="cert-emblem" data-icon="logo" data-icon-class="logo-svg"></div>
-        <p class="cert-kicker">Удостоверение космонавта <span id="cert-number"></span></p>
-        <h1 id="cert-name"></h1>
-        <p class="cert-mission" id="cert-mission"></p>
-        <div class="cert-stars" id="cert-stars"></div>
-        <dl class="cert-stats">
-          <div><dt>Время миссии</dt><dd id="cert-time"></dd></div>
-          <div><dt>Станций пройдено</dt><dd id="cert-stations"></dd></div>
-          <div><dt>Дата</dt><dd id="cert-date"></dd></div>
+    <section class="screen start" id="screen-start">
+      <div class="start-meta hud-label"><span>ЦУП · КАНАЛ 07</span><span id="start-date"></span></div>
+      <div class="start-body">
+        <div class="start-patch" data-patch></div>
+        <div class="hud-label accent">AR-миссия · 6–10 лет</div>
+        <h1 id="start-title"></h1>
+        <p class="lead">Корабль «Заря-7» потерял навигационные кристаллы. Найди метки станций, наведи на них планшет и верни экипаж домой.</p>
+        <dl class="stats">
+          <div><dt>Станций</dt><dd>05</dd></div>
+          <div><dt>Минут</dt><dd>25</dd></div>
+          <div><dt>Экипаж</dt><dd>1–4</dd></div>
         </dl>
-        <p class="cert-text" id="cert-text"></p>
+        <ol class="start-route" id="start-route"></ol>
+        <label class="field">
+          <span class="hud-label">Позывной капитана</span>
+          <input id="name-input" maxlength="30" placeholder="Введите имя" autocomplete="off">
+        </label>
+        <div class="start-actions">
+          <button class="btn btn-big" id="start-btn">Начать миссию <span data-line="arrow"></span></button>
+          <a class="link" href="print.html" target="_blank" rel="noopener">Метки для печати и инструкция</a>
+        </div>
       </div>
-      <button class="btn" id="restart-btn">Новая миссия</button>
     </section>
 
-    <section class="screen" id="screen-camera" hidden>
-      <div class="logo" data-icon="camera" data-icon-class="logo-svg"></div>
-      <h1>Нет доступа к камере</h1>
-      <p class="lead">Разрешите браузеру доступ к камере и перезагрузите страницу. Квест открывается по ссылке <b>https://</b> — по http камера не работает.</p>
-      <button class="btn" onclick="location.reload()">Попробовать снова</button>
-      <a class="link" href="?demo">Пройти без камеры (демо)</a>
+    <section class="screen brief" id="screen-brief" hidden>
+      <div class="transmission">
+        <header class="tx-head">
+          <span class="rec"></span>
+          <span class="hud-label">Входящая передача · ЦУП → «Заря-7»</span>
+          <span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+        </header>
+        <div class="tx-body"><p id="brief-text"></p><span class="caret"></span></div>
+        <footer class="tx-foot">
+          <span class="hud-label" id="brief-hint">Нажмите на текст, чтобы показать целиком</span>
+          <button class="btn" id="brief-btn" disabled>Принять <span data-line="arrow"></span></button>
+        </footer>
+      </div>
+    </section>
+
+    <section class="screen final" id="screen-final" hidden>
+      <article class="certificate">
+        <div class="cert-patch" data-patch></div>
+        <div class="cert-main">
+          <div class="hud-label accent">Удостоверение космонавта <span id="cert-number"></span></div>
+          <h1 id="cert-name"></h1>
+          <p class="cert-mission" id="cert-mission"></p>
+          <dl class="cert-stats">
+            <div><dt>Время миссии</dt><dd id="cert-time"></dd></div>
+            <div><dt>Станции</dt><dd id="cert-stations"></dd></div>
+            <div><dt>Дата</dt><dd id="cert-date"></dd></div>
+          </dl>
+          <p class="cert-text" id="cert-text"></p>
+          <div class="cert-sign"><span>Руководитель полёта</span><span class="sign-line"></span><span>ЦУП</span></div>
+        </div>
+        <div class="stamp">Миссия<br>выполнена</div>
+      </article>
+      <button class="btn btn-ghost" id="restart-btn">Новая миссия</button>
+    </section>
+
+    <section class="screen camera-error" id="screen-camera" hidden>
+      <div class="cam-card">
+        <div class="cam-spinner off"><span data-line="camera"></span></div>
+        <div class="hud-label">БОРТОВАЯ КАМЕРА · НЕТ СИГНАЛА</div>
+        <h2>Нет доступа к камере</h2>
+        <p>Разрешите браузеру доступ к камере и перезагрузите страницу. Квест открывается по ссылке <b>https://</b> — по http камера не работает.</p>
+        <div class="start-actions">
+          <button class="btn" onclick="location.reload()">Попробовать снова</button>
+          <a class="link" href="?demo">Пройти без камеры (демо)</a>
+        </div>
+      </div>
     </section>
   </div>
 
